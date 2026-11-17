@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Crown, Plus, RotateCcw, Square } from 'lucide-react'
+import { GameResultDialog } from '@/components/game-result-dialog'
 
 type Player = { id: number; name: string; score: number; disabled: boolean }
 type GameState = { revealed: boolean[]; players: Player[]; selectedPlayerId: number | null; winnerId: number | null; answerRevealed: boolean }
@@ -14,6 +15,7 @@ export default function Page() {
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null)
   const [winnerId, setWinnerId] = useState<number | null>(null)
   const [answerRevealed, setAnswerRevealed] = useState(false)
+  const [resultDialogOpen, setResultDialogOpen] = useState(false)
   const [name, setName] = useState('')
   const [history, setHistory] = useState<GameState[]>([])
   const playerRows = useRef(new Map<number, HTMLLIElement>())
@@ -96,6 +98,7 @@ export default function Page() {
       winnerId: activePlayer.id,
       answerRevealed: true,
     })
+    setResultDialogOpen(true)
   }
 
   function undo() {
@@ -106,6 +109,7 @@ export default function Page() {
     setSelectedPlayerId(previous.selectedPlayerId)
     setWinnerId(previous.winnerId)
     setAnswerRevealed(previous.answerRevealed)
+    setResultDialogOpen(false)
     setHistory((items) => items.slice(0, -1))
   }
 
@@ -115,10 +119,13 @@ export default function Page() {
     setSelectedPlayerId(null)
     setWinnerId(null)
     setAnswerRevealed(false)
+    setResultDialogOpen(false)
     setName('')
     setHistory([])
   }
 
+  const topScorer = players.reduce<Player | null>((highest, player) => !highest || player.score > highest.score ? player : highest, null)
+  const answeringPlayer = players.find((player) => player.id === winnerId)
   const canReset = history.length > 0 || revealed.some(Boolean) || players.some((player) => player.score > 0 || player.disabled) || answerRevealed
 
   return (
@@ -195,6 +202,12 @@ export default function Page() {
           </form>
         </section>
       </section>
+      <GameResultDialog
+        open={resultDialogOpen}
+        onOpenChange={setResultDialogOpen}
+        topScorerName={topScorer?.name ?? '—'}
+        answeringPlayerName={answeringPlayer?.name ?? '—'}
+      />
     </main>
   )
 }

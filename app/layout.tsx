@@ -9,10 +9,10 @@ const robotoSerif = Roboto_Serif({
 })
 
 export const metadata: Metadata = {
-  title: 'Trò chơi đoán chứ',
+  title: 'Trò chơi đoán chữ',
   description: 'Đoán trúng có quà',
   openGraph: {
-    title: 'Trò chơi đoán chứ',
+    title: 'Trò chơi đoán chữ',
     description: 'Đoán trúng có quà',
     type: 'website',
     locale: 'vi_VN',

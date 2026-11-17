@@ -111,10 +111,11 @@ export default function Page() {
 
   function playAgain() {
     setRevealed(Array(letters.length).fill(false))
-    setPlayers((currentPlayers) => currentPlayers.map((player) => ({ ...player, score: 0, disabled: false })))
+    setPlayers([])
     setSelectedPlayerId(null)
     setWinnerId(null)
     setAnswerRevealed(false)
+    setName('')
     setHistory([])
   }
 

@@ -56,11 +56,12 @@ export default function Page() {
   function addPlayer(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const cleanName = name.trim()
-    if (!cleanName) return
+    if (!cleanName || answerRevealed) return
+    const newPlayer = { id: Date.now(), name: cleanName, score: 0, disabled: false }
     record({
       revealed,
-      players: [...players, { id: Date.now(), name: cleanName, score: 0, disabled: false }],
-      selectedPlayerId,
+      players: [...players, newPlayer],
+      selectedPlayerId: newPlayer.id,
       winnerId,
       answerRevealed,
     })
@@ -74,7 +75,7 @@ export default function Page() {
 
   function stopPlayer(id: number) {
     const player = players.find((item) => item.id === id)
-    if (!player || player.disabled) return
+    if (!player || player.disabled || answerRevealed) return
     record({
       revealed,
       players: players.map((item) => item.id === id ? { ...item, disabled: true } : item),
@@ -182,7 +183,7 @@ export default function Page() {
                     {winnerId === player.id ? <Crown className="winner-crown" size={16} aria-label="Người chiến thắng" /> : selectedPlayerId === player.id ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
                   </button>
                   <span className="player-score">{player.score}<small> ĐIỂM</small></span>
-                  <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} disabled={player.disabled} aria-label={`${player.disabled ? 'Đã tạm dừng' : 'Tạm dừng'} ${player.name}`} title={player.disabled ? 'Người chơi đã tạm dừng' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>
+                  <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} disabled={player.disabled || answerRevealed} aria-label={`${player.disabled ? 'Đã tạm dừng' : 'Tạm dừng'} ${player.name}`} title={answerRevealed ? 'Ván chơi đã kết thúc' : player.disabled ? 'Người chơi đã tạm dừng' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>
                 </li>
               ))}
             </ol>
@@ -190,8 +191,8 @@ export default function Page() {
 
           <form className="add-player-form" onSubmit={addPlayer}>
             <label className="sr-only" htmlFor="player-name">Tên người chơi</label>
-            <input id="player-name" type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="Nhập tên người chơi..." maxLength={32} />
-            <button className="add-button" type="submit" disabled={!name.trim()}><Plus size={17} /><span>Thêm người chơi</span></button>
+            <input id="player-name" type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="Nhập tên người chơi..." maxLength={32} disabled={answerRevealed} />
+            <button className="add-button" type="submit" disabled={answerRevealed || !name.trim()}><Plus size={17} /><span>Thêm người chơi</span></button>
           </form>
         </section>
       </section>

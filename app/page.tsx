@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Crown, Plus, RotateCcw, Square } from 'lucide-react'
+import { Plus, RotateCcw, Square } from 'lucide-react'
 import { GameResultDialog } from '@/components/game-result-dialog'
 
 type Player = { id: number; name: string; score: number; disabled: boolean }
@@ -180,7 +180,7 @@ export default function Page() {
         <section className="players-panel" aria-labelledby="players-heading">
           <div className="players-header">
             <h2 id="players-heading">Người chơi <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2>
-            <button className="answer-button" type="button" onClick={answer} disabled={!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null}>Trả lời</button>
+            <button className="answer-button" type="button" onClick={answerRevealed ? () => setResultDialogOpen(true) : answer} disabled={!answerRevealed && (!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null)}>{answerRevealed ? 'Xem kết quả' : 'Trả lời'}</button>
           </div>
           {players.length > 0 ? (
             <ol className="player-list">
@@ -192,7 +192,7 @@ export default function Page() {
                   <span className="player-rank">{String(index + 1).padStart(2, '0')}</span>
                   <button className="player-select" type="button" onClick={() => selectPlayer(player.id)} disabled={player.disabled || winnerId !== null} aria-pressed={selectedPlayerId === player.id}>
                     <span className="player-name">{player.name}</span>
-                    {winnerId === player.id ? <Crown className="winner-crown" size={16} aria-label="Người chiến thắng" /> : selectedPlayerId === player.id ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
+                    {selectedPlayerId === player.id && winnerId === null ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
                   </button>
                   <span className="player-score">{player.score}<small> ĐIỂM</small></span>
                   {!player.disabled && !answerRevealed && <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} aria-label={`Tạm dừng ${player.name}`} title="Tạm dừng người chơi"><Square size={15} fill="currentColor" /></button>}

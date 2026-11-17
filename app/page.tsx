@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Plus, RotateCcw, Square } from 'lucide-react'
 import { GameResultDialog } from '@/components/game-result-dialog'
 
@@ -39,12 +39,6 @@ export default function Page() {
     })
     previousPositions.current = nextPositions
   }, [orderedPlayers])
-
-  useEffect(() => {
-    if (!answerRevealed) return
-    const timeoutId = window.setTimeout(() => setResultDialogOpen(true), 3000)
-    return () => window.clearTimeout(timeoutId)
-  }, [answerRevealed])
 
   function record(next: GameState) {
     setHistory((previous) => [...previous, {

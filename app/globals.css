@@ -95,7 +95,9 @@ button { color: inherit; }
 .result-dialog-title { margin: 0; text-align: center; font-size: 30px; font-weight: 500; letter-spacing: -.04em; }
 .result-dialog-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; font-size: 15px; line-height: 1.5; }
 .result-award-card { min-width: 0; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 14px 10px; border: 1px solid rgba(64,27,10,.24); border-radius: 5px; background: rgba(255,255,255,.32); text-align: center; }
-.result-award-name { max-width: 100%; overflow-wrap: anywhere; font-size: 16px; font-weight: 700; }
+.result-award-winners { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.result-award-name { min-width: 0; overflow-wrap: anywhere; font-size: 16px; font-weight: 700; }
+.result-award-icon { flex: 0 0 auto; color: #a66b20; }
 .result-award-title { color: rgba(64,27,10,.7); font-size: 11px; font-weight: 700; }
 .result-dialog-close { min-height: 38px; align-self: flex-end; padding: 0 16px; border: 1px solid #401b0a; border-radius: 3px; color: #fdeedf; background: #401b0a; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .result-dialog-backdrop, .result-dialog-popup { transition: none; } }

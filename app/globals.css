@@ -37,7 +37,7 @@ button { color: inherit; }
 .undo-button:disabled { opacity: .38; cursor: not-allowed; }
 .game-content { max-width: 800px; margin: 0 auto; padding: 45px 0 36px; }
 .puzzle { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; max-width: 590px; margin: 0 auto; }
-.letter-tile { width: 100%; aspect-ratio: 1; display: grid; place-items: center; border: 1.5px solid #401b0a; border-radius: 4px; background: transparent; cursor: pointer; transition: background .16s ease, color .16s ease, transform .16s ease; }
+.letter-tile { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; text-align: center; border: 1.5px solid #401b0a; border-radius: 4px; background: transparent; cursor: pointer; transition: background .16s ease, color .16s ease, transform .16s ease; }
 .letter-tile:hover { transform: translateY(-2px); background: rgba(64,27,10,.08); }
 .letter-tile:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid rgba(64,27,10,.45); outline-offset: 3px; }
 .letter-tile span { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(28px, 5vw, 42px); line-height: 1; }

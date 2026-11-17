@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Plus, RotateCcw, Square } from 'lucide-react'
 
 type Player = { id: number; name: string; score: number; disabled: boolean }
@@ -12,7 +12,27 @@ export default function Page() {
   const [players, setPlayers] = useState<Player[]>([])
   const [name, setName] = useState('')
   const [history, setHistory] = useState<GameState[]>([])
+  const playerRows = useRef(new Map<number, HTMLLIElement>())
+  const previousPositions = useRef(new Map<number, number>())
   const orderedPlayers = useMemo(() => [...players].sort((a, b) => Number(a.disabled) - Number(b.disabled) || b.score - a.score || a.id - b.id), [players])
+
+  useLayoutEffect(() => {
+    const nextPositions = new Map<number, number>()
+    orderedPlayers.forEach((player) => {
+      const row = playerRows.current.get(player.id)
+      if (!row) return
+      row.getAnimations().forEach((animation) => animation.cancel())
+      const nextTop = row.offsetTop
+      const previousTop = previousPositions.current.get(player.id)
+      nextPositions.set(player.id, nextTop)
+      if (previousTop === undefined || Math.abs(previousTop - nextTop) < 1 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      row.animate(
+        [{ transform: `translateY(${previousTop - nextTop}px)` }, { transform: 'translateY(0)' }],
+        { duration: 360, easing: 'cubic-bezier(.2,.75,.25,1)' },
+      )
+    })
+    previousPositions.current = nextPositions
+  }, [orderedPlayers])
 
   function record(next: GameState) {
     setHistory((previous) => [...previous, { revealed: [...revealed], players: players.map((player) => ({ ...player })) }])
@@ -43,11 +63,11 @@ export default function Page() {
   return (
     <main className="game-shell">
       <header className="topbar">
-        <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Undo last action"><RotateCcw size={16} /> <span>Undo</span></button>
+          <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Hoàn tác thao tác gần nhất"><RotateCcw size={16} /> <span>Hoàn tác</span></button>
       </header>
 
       <section className="game-content">
-        <div className="puzzle" aria-label={`${revealed.filter(Boolean).length} of 10 letters revealed`}>
+        <div className="puzzle" aria-label={`Đã mở ${revealed.filter(Boolean).length} trên 10 chữ cái`}>
           {solution.map((letter, letterIndex) => (
             <button
               className={`letter-tile${revealed[letterIndex] ? ' is-revealed' : ''}`}
@@ -59,7 +79,7 @@ export default function Page() {
                 next[letterIndex] = true
                 record({ revealed: next, players })
               }}
-              aria-label={revealed[letterIndex] ? `Letter ${letter}` : `Reveal letter ${letterIndex + 1}`}
+              aria-label={revealed[letterIndex] ? `Chữ cái ${letter}` : `Mở chữ cái thứ ${letterIndex + 1}`}
               aria-pressed={revealed[letterIndex]}
             >
               <span>{revealed[letterIndex] ? letter : ''}</span>
@@ -69,26 +89,29 @@ export default function Page() {
 
         <section className="players-panel" aria-labelledby="players-heading">
           <div className="players-header">
-            <h2 id="players-heading">Players <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2>
+            <h2 id="players-heading">Người chơi <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2>
           </div>
           {players.length > 0 ? (
             <ol className="player-list">
               {orderedPlayers.map((player, index) => (
-                <li className={`player-row${player.disabled ? ' is-disabled' : ''}`} key={player.id}>
+                <li className={`player-row${player.disabled ? ' is-disabled' : ''}`} key={player.id} ref={(element) => {
+                  if (element) playerRows.current.set(player.id, element)
+                  else playerRows.current.delete(player.id)
+                }}>
                   <span className="player-rank">{String(index + 1).padStart(2, '0')}</span>
-                  <span className="player-name">{player.name}<span className="player-status">{player.disabled ? 'PAUSED' : ''}</span></span>
-                  <span className="player-score">{player.score}<small> PTS</small></span>
-                  <button className="score-button" type="button" onClick={() => updatePlayer(player.id, (item) => ({ ...item, score: item.score + 1 }))} disabled={player.disabled} aria-label={`Add one point to ${player.name}`}>+1</button>
-                  <button className="stop-button" type="button" onClick={() => updatePlayer(player.id, (item) => ({ ...item, disabled: !item.disabled }))} aria-label={`${player.disabled ? 'Enable' : 'Disable'} ${player.name}`} title={player.disabled ? 'Enable player' : 'Disable player'}><Square size={15} fill="currentColor" /></button>
+                  <span className="player-name">{player.name}<span className="player-status">{player.disabled ? 'ĐÃ TẠM DỪNG' : ''}</span></span>
+                  <span className="player-score">{player.score}<small> ĐIỂM</small></span>
+                  <button className="score-button" type="button" onClick={() => updatePlayer(player.id, (item) => ({ ...item, score: item.score + 1 }))} disabled={player.disabled} aria-label={`Cộng một điểm cho ${player.name}`}>+1</button>
+                  <button className="stop-button" type="button" onClick={() => updatePlayer(player.id, (item) => ({ ...item, disabled: !item.disabled }))} aria-label={`${player.disabled ? 'Bật lại' : 'Tạm dừng'} ${player.name}`} title={player.disabled ? 'Bật lại người chơi' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>
                 </li>
               ))}
             </ol>
-          ) : <div className="empty-state"><span className="empty-dash">—</span><span>No players yet. Add your first player below.</span></div>}
+          ) : <div className="empty-state"><span className="empty-dash">—</span><span>Chưa có người chơi. Hãy thêm người chơi bên dưới.</span></div>}
 
           <form className="add-player-form" onSubmit={addPlayer}>
-            <label className="sr-only" htmlFor="player-name">Player name</label>
-            <input id="player-name" type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="Enter a player name..." maxLength={32} />
-            <button className="add-button" type="submit" disabled={!name.trim()}><Plus size={17} /><span>Add player</span></button>
+            <label className="sr-only" htmlFor="player-name">Tên người chơi</label>
+            <input id="player-name" type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="Nhập tên người chơi..." maxLength={32} />
+            <button className="add-button" type="submit" disabled={!name.trim()}><Plus size={17} /><span>Thêm người chơi</span></button>
           </form>
         </section>
       </section>

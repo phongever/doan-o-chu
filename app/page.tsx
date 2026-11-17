@@ -1,15 +1,17 @@
 'use client'
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Plus, RotateCcw, Square } from 'lucide-react'
+import { Crown, Plus, RotateCcw, Square } from 'lucide-react'
 
 type Player = { id: number; name: string; score: number; disabled: boolean }
-type GameState = { revealed: boolean[]; players: Player[] }
+type GameState = { revealed: boolean[]; players: Player[]; selectedPlayerId: number | null; winnerId: number | null }
 
 const solution = ['M', 'Ỡ', 'Đ', 'Ấ', 'Y', 'M', 'À', 'H', 'Ú', 'P']
 export default function Page() {
   const [revealed, setRevealed] = useState<boolean[]>(Array(10).fill(false))
   const [players, setPlayers] = useState<Player[]>([])
+  const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null)
+  const [winnerId, setWinnerId] = useState<number | null>(null)
   const [name, setName] = useState('')
   const [history, setHistory] = useState<GameState[]>([])
   const playerRows = useRef(new Map<number, HTMLLIElement>())
@@ -35,21 +37,46 @@ export default function Page() {
   }, [orderedPlayers])
 
   function record(next: GameState) {
-    setHistory((previous) => [...previous, { revealed: [...revealed], players: players.map((player) => ({ ...player })) }])
+    setHistory((previous) => [...previous, {
+      revealed: [...revealed],
+      players: players.map((player) => ({ ...player })),
+      selectedPlayerId,
+      winnerId,
+    }])
     setRevealed(next.revealed)
     setPlayers(next.players)
+    setSelectedPlayerId(next.selectedPlayerId)
+    setWinnerId(next.winnerId)
   }
 
   function addPlayer(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const cleanName = name.trim()
     if (!cleanName) return
-    record({ revealed, players: [...players, { id: Date.now(), name: cleanName, score: 0, disabled: false }] })
+    record({
+      revealed,
+      players: [...players, { id: Date.now(), name: cleanName, score: 0, disabled: false }],
+      selectedPlayerId,
+      winnerId,
+    })
     setName('')
   }
 
-  function updatePlayer(id: number, update: (player: Player) => Player) {
-    record({ revealed, players: players.map((player) => player.id === id ? update(player) : player) })
+  function selectPlayer(id: number) {
+    if (winnerId !== null) return
+    record({ revealed, players, selectedPlayerId: id, winnerId })
+  }
+
+  function togglePlayer(id: number) {
+    const player = players.find((item) => item.id === id)
+    if (!player) return
+    const disabling = !player.disabled
+    record({
+      revealed,
+      players: players.map((item) => item.id === id ? { ...item, disabled: disabling } : item),
+      selectedPlayerId: disabling && selectedPlayerId === id ? null : selectedPlayerId,
+      winnerId,
+    })
   }
 
   function undo() {
@@ -57,6 +84,8 @@ export default function Page() {
     if (!previous) return
     setRevealed(previous.revealed)
     setPlayers(previous.players)
+    setSelectedPlayerId(previous.selectedPlayerId)
+    setWinnerId(previous.winnerId)
     setHistory((items) => items.slice(0, -1))
   }
 
@@ -74,12 +103,20 @@ export default function Page() {
               key={letterIndex}
               type="button"
               onClick={() => {
-                if (revealed[letterIndex]) return
-                const next = [...revealed]
-                next[letterIndex] = true
-                record({ revealed: next, players })
+                const activePlayer = players.find((player) => player.id === selectedPlayerId && !player.disabled)
+                if (revealed[letterIndex] || !activePlayer || winnerId !== null) return
+                const nextRevealed = [...revealed]
+                nextRevealed[letterIndex] = true
+                const answerComplete = nextRevealed.every(Boolean)
+                record({
+                  revealed: nextRevealed,
+                  players: players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + 1 } : player),
+                  selectedPlayerId,
+                  winnerId: answerComplete ? activePlayer.id : null,
+                })
               }}
-              aria-label={revealed[letterIndex] ? `Chữ cái ${letter}` : `Mở chữ cái thứ ${letterIndex + 1}`}
+              disabled={!selectedPlayerId || winnerId !== null || revealed[letterIndex]}
+              aria-label={revealed[letterIndex] ? `Chữ cái ${letter}` : !selectedPlayerId ? 'Chọn người chơi để mở chữ cái' : `Mở chữ cái thứ ${letterIndex + 1}`}
               aria-pressed={revealed[letterIndex]}
             >
               <span>{revealed[letterIndex] ? letter : ''}</span>
@@ -94,15 +131,17 @@ export default function Page() {
           {players.length > 0 ? (
             <ol className="player-list">
               {orderedPlayers.map((player, index) => (
-                <li className={`player-row${player.disabled ? ' is-disabled' : ''}`} key={player.id} ref={(element) => {
+                <li className={`player-row${player.disabled ? ' is-disabled' : ''}${selectedPlayerId === player.id ? ' is-selected' : ''}`} key={player.id} ref={(element) => {
                   if (element) playerRows.current.set(player.id, element)
                   else playerRows.current.delete(player.id)
                 }}>
                   <span className="player-rank">{String(index + 1).padStart(2, '0')}</span>
-                  <span className="player-name">{player.name}<span className="player-status">{player.disabled ? 'ĐÃ TẠM DỪNG' : ''}</span></span>
+                  <button className="player-select" type="button" onClick={() => selectPlayer(player.id)} disabled={player.disabled || winnerId !== null} aria-pressed={selectedPlayerId === player.id}>
+                    <span className="player-name">{player.name}</span>
+                    {winnerId === player.id ? <Crown className="winner-crown" size={16} aria-label="Người chiến thắng" /> : selectedPlayerId === player.id ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
+                  </button>
                   <span className="player-score">{player.score}<small> ĐIỂM</small></span>
-                  <button className="score-button" type="button" onClick={() => updatePlayer(player.id, (item) => ({ ...item, score: item.score + 1 }))} disabled={player.disabled} aria-label={`Cộng một điểm cho ${player.name}`}>+1</button>
-                  <button className="stop-button" type="button" onClick={() => updatePlayer(player.id, (item) => ({ ...item, disabled: !item.disabled }))} aria-label={`${player.disabled ? 'Bật lại' : 'Tạm dừng'} ${player.name}`} title={player.disabled ? 'Bật lại người chơi' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>
+                  <button className="stop-button" type="button" onClick={() => togglePlayer(player.id)} aria-label={`${player.disabled ? 'Bật lại' : 'Tạm dừng'} ${player.name}`} title={player.disabled ? 'Bật lại người chơi' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>
                 </li>
               ))}
             </ol>

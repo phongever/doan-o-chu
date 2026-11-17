@@ -31,15 +31,31 @@ html { background: #fdeedf; }
 body { margin: 0; background: #fdeedf; color: #401b0a; }
 button, input { font: inherit; }
 button { color: inherit; }
-.game-shell { min-height: 100vh; padding: 0 7.2%; }
-.topbar { height: 64px; display: flex; align-items: center; justify-content: flex-end; }
+.game-shell { position: relative; isolation: isolate; min-height: 100vh; padding: 0 7.2%; }
+.topbar { position: relative; z-index: 1; height: 64px; display: flex; align-items: center; justify-content: flex-end; }
+.topbar-actions { display: flex; align-items: center; gap: 16px; }
 .undo-button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 0 9px 12px; border: 0; background: transparent; cursor: pointer; font-size: 12px; font-weight: 600; }
 .undo-button:disabled { opacity: .38; cursor: not-allowed; }
-.game-content { max-width: 800px; margin: 0 auto; padding: 45px 0 36px; }
+.replay-button { min-height: 34px; padding: 0 12px; border: 1px solid rgba(64,27,10,.35); border-radius: 3px; background: transparent; cursor: pointer; font-size: 11px; font-weight: 700; transition: background .16s ease, color .16s ease, opacity .16s ease; }
+.replay-button:hover:not(:disabled) { color: #fdeedf; background: #401b0a; }
+.replay-button:disabled { opacity: .4; cursor: not-allowed; }
+.game-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 45px 0 36px; }
+.fireworks { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
+.firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; border-radius: 50%; color: #cb7443; background: radial-gradient(circle, currentColor 0 2px, transparent 3px), repeating-conic-gradient(currentColor 0deg 2deg, transparent 2deg 22.5deg); mask-image: radial-gradient(circle, transparent 0 8%, #000 12% 72%, transparent 76%); opacity: 0; animation: firework-burst 3.2s ease-out infinite; }
+.firework-one { top: 8%; left: 0; }
+.firework-two { top: 16%; right: 0; color: #648f8a; animation-delay: 1s; }
+.firework-three { top: 58%; left: 1%; color: #c78a36; animation-delay: 2s; }
+@keyframes firework-burst {
+  0% { opacity: 0; transform: scale(.12) rotate(-12deg); }
+  14% { opacity: .78; }
+  58% { opacity: .4; transform: scale(1) rotate(8deg); }
+  100% { opacity: 0; transform: scale(1.35) rotate(20deg); }
+}
+@media (prefers-reduced-motion: reduce) { .firework { animation: none; opacity: .18; transform: scale(.8); } }
 .puzzle { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; max-width: 590px; margin: 0 auto; }
 .letter-tile { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; text-align: center; border: 1.5px solid #401b0a; border-radius: 4px; background: transparent; cursor: pointer; transition: background .16s ease, color .16s ease, transform .16s ease; }
 .letter-tile:hover:not(:disabled) { transform: translateY(-2px); background: rgba(64,27,10,.08); }
-.letter-tile:disabled:not(.is-revealed) { cursor: not-allowed; opacity: .55; }
+.letter-tile:disabled:not(.is-revealed) { cursor: not-allowed; }
 .letter-tile:disabled.is-revealed { opacity: 1; }
 .letter-tile:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid rgba(64,27,10,.45); outline-offset: 3px; }
 .letter-tile span {  font-size: clamp(28px, 5vw, 42px); line-height: 1; }

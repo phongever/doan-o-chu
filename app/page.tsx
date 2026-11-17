@@ -108,10 +108,25 @@ export default function Page() {
     setHistory((items) => items.slice(0, -1))
   }
 
+  function playAgain() {
+    setRevealed(Array(letters.length).fill(false))
+    setPlayers((currentPlayers) => currentPlayers.map((player) => ({ ...player, score: 0, disabled: false })))
+    setSelectedPlayerId(null)
+    setWinnerId(null)
+    setAnswerRevealed(false)
+    setHistory([])
+  }
+
+  const canReset = history.length > 0 || revealed.some(Boolean) || players.some((player) => player.score > 0 || player.disabled) || answerRevealed
+
   return (
     <main className="game-shell">
+      {answerRevealed && <div className="fireworks" aria-hidden="true"><span className="firework firework-one" /><span className="firework firework-two" /><span className="firework firework-three" /></div>}
       <header className="topbar">
+        <div className="topbar-actions">
           <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Hoàn tác thao tác gần nhất"><RotateCcw size={16} /> <span>Hoàn tác</span></button>
+          <button className="replay-button" type="button" onClick={playAgain} disabled={!canReset}>Chơi lại</button>
+        </div>
       </header>
 
       <section className="game-content">

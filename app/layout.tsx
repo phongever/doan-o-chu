@@ -1,6 +1,12 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { Roboto_Serif } from 'next/font/google'
 import './globals.css'
+
+const robotoSerif = Roboto_Serif({
+  subsets: ['latin', 'vietnamese'],
+  variable: '--font-roboto-serif',
+})
 
 export const metadata: Metadata = {
   title: 'Ô chữ bí ẩn — Trò chơi đoán chữ',
@@ -36,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="vi">
+    <html lang="vi" className={robotoSerif.variable}>
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

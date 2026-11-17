@@ -42,7 +42,7 @@ export default function Page() {
 
   useEffect(() => {
     if (!answerRevealed) return
-    const timeoutId = window.setTimeout(() => setResultDialogOpen(true), 5000)
+    const timeoutId = window.setTimeout(() => setResultDialogOpen(true), 3000)
     return () => window.clearTimeout(timeoutId)
   }, [answerRevealed])
 
@@ -195,7 +195,7 @@ export default function Page() {
                     {winnerId === player.id ? <Crown className="winner-crown" size={16} aria-label="Người chiến thắng" /> : selectedPlayerId === player.id ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
                   </button>
                   <span className="player-score">{player.score}<small> ĐIỂM</small></span>
-                  {!player.disabled && <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} disabled={answerRevealed} aria-label={`Tạm dừng ${player.name}`} title={answerRevealed ? 'Ván chơi đã kết thúc' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>}
+                  {!player.disabled && !answerRevealed && <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} aria-label={`Tạm dừng ${player.name}`} title="Tạm dừng người chơi"><Square size={15} fill="currentColor" /></button>}
                 </li>
               ))}
             </ol>

@@ -22,8 +22,14 @@ export function GameResultDialog({
         <Dialog.Popup className="result-dialog-popup">
           <Dialog.Title className="result-dialog-title">Chúc mừng</Dialog.Title>
           <Dialog.Description className="result-dialog-body">
-            <span>Giải nhất: <strong>{topScorerNames.join(', ') || '—'}</strong></span>
-            <span>Giải đặc biệt: <strong>{answeringPlayerName}</strong></span>
+            <span className="result-award-card">
+              <strong className="result-award-name">{topScorerNames.join(', ') || '—'}</strong>
+              <span className="result-award-title">Giải nhất</span>
+            </span>
+            <span className="result-award-card">
+              <strong className="result-award-name">{answeringPlayerName}</strong>
+              <span className="result-award-title">Giải đặc biệt</span>
+            </span>
           </Dialog.Description>
           <Dialog.Close className="result-dialog-close">Đóng</Dialog.Close>
         </Dialog.Popup>

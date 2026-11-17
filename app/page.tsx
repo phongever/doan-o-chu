@@ -1,6 +1,6 @@
 'use client'
 
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Crown, Plus, RotateCcw, Square } from 'lucide-react'
 import { GameResultDialog } from '@/components/game-result-dialog'
 
@@ -39,6 +39,12 @@ export default function Page() {
     })
     previousPositions.current = nextPositions
   }, [orderedPlayers])
+
+  useEffect(() => {
+    if (!answerRevealed) return
+    const timeoutId = window.setTimeout(() => setResultDialogOpen(true), 5000)
+    return () => window.clearTimeout(timeoutId)
+  }, [answerRevealed])
 
   function record(next: GameState) {
     setHistory((previous) => [...previous, {
@@ -98,7 +104,6 @@ export default function Page() {
       winnerId: activePlayer.id,
       answerRevealed: true,
     })
-    setResultDialogOpen(true)
   }
 
   function undo() {
@@ -124,7 +129,8 @@ export default function Page() {
     setHistory([])
   }
 
-  const topScorer = players.reduce<Player | null>((highest, player) => !highest || player.score > highest.score ? player : highest, null)
+  const highestScore = players.reduce((highest, player) => Math.max(highest, player.score), Number.NEGATIVE_INFINITY)
+  const topScorerNames = players.filter((player) => player.score === highestScore).map((player) => player.name)
   const answeringPlayer = players.find((player) => player.id === winnerId)
   const canReset = history.length > 0 || revealed.some(Boolean) || players.some((player) => player.score > 0 || player.disabled) || answerRevealed
 
@@ -205,7 +211,7 @@ export default function Page() {
       <GameResultDialog
         open={resultDialogOpen}
         onOpenChange={setResultDialogOpen}
-        topScorerName={topScorer?.name ?? '—'}
+        topScorerNames={topScorerNames}
         answeringPlayerName={answeringPlayer?.name ?? '—'}
       />
     </main>

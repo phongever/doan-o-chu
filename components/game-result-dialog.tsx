@@ -5,14 +5,14 @@ import { Dialog } from '@base-ui/react/dialog'
 type GameResultDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  topScorerName: string
+  topScorerNames: string[]
   answeringPlayerName: string
 }
 
 export function GameResultDialog({
   open,
   onOpenChange,
-  topScorerName,
+  topScorerNames,
   answeringPlayerName,
 }: GameResultDialogProps) {
   return (
@@ -22,7 +22,7 @@ export function GameResultDialog({
         <Dialog.Popup className="result-dialog-popup">
           <Dialog.Title className="result-dialog-title">Chúc mừng</Dialog.Title>
           <Dialog.Description className="result-dialog-body">
-            <span>Giải nhất: <strong>{topScorerName}</strong></span>
+            <span>Giải nhất: <strong>{topScorerNames.join(', ') || '—'}</strong></span>
             <span>Giải đặc biệt: <strong>{answeringPlayerName}</strong></span>
           </Dialog.Description>
           <Dialog.Close className="result-dialog-close">Đóng</Dialog.Close>

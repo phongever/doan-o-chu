@@ -7,8 +7,6 @@ type Player = { id: number; name: string; score: number; disabled: boolean }
 type GameState = { revealed: boolean[]; players: Player[] }
 
 const solution = ['M', 'Ỡ', 'Đ', 'Ấ', 'Y', 'M', 'À', 'H', 'Ú', 'P']
-const groups = [[0, 1], [2, 3, 4], [5, 6], [7, 8, 9]]
-
 export default function Page() {
   const [revealed, setRevealed] = useState<boolean[]>(Array(10).fill(false))
   const [players, setPlayers] = useState<Player[]>([])
@@ -45,45 +43,33 @@ export default function Page() {
   return (
     <main className="game-shell">
       <header className="topbar">
-        <a className="wordmark" href="#home" aria-label="Mỡ đấy mà húp home"><span className="brand-mark">M</span><span>THE BIG REVEAL</span></a>
         <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Undo last action"><RotateCcw size={16} /> <span>Undo</span></button>
       </header>
 
-      <section className="game-content" id="home">
-        <div className="eyebrow"><span className="live-dot" /> GAME NIGHT <span className="eyebrow-line" /> ROUND 01</div>
-        <h1>Guess the phrase.</h1>
-        <p className="subtitle">Tap a tile to reveal a letter. First to guess it gets the point.</p>
-
+      <section className="game-content">
         <div className="puzzle" aria-label={`${revealed.filter(Boolean).length} of 10 letters revealed`}>
-          {groups.map((group, groupIndex) => (
-            <div className="word-group" key={groupIndex}>
-              {group.map((letterIndex) => (
-                <button
-                  className={`letter-tile${revealed[letterIndex] ? ' is-revealed' : ''}`}
-                  key={letterIndex}
-                  type="button"
-                  onClick={() => {
-                    if (revealed[letterIndex]) return
-                    const next = [...revealed]
-                    next[letterIndex] = true
-                    record({ revealed: next, players })
-                  }}
-                  aria-label={revealed[letterIndex] ? `Letter ${solution[letterIndex]}` : `Reveal letter ${letterIndex + 1}`}
-                  aria-pressed={revealed[letterIndex]}
-                >
-                  <span>{revealed[letterIndex] ? solution[letterIndex] : ''}</span>
-                </button>
-              ))}
-            </div>
+          {solution.map((letter, letterIndex) => (
+            <button
+              className={`letter-tile${revealed[letterIndex] ? ' is-revealed' : ''}`}
+              key={letterIndex}
+              type="button"
+              onClick={() => {
+                if (revealed[letterIndex]) return
+                const next = [...revealed]
+                next[letterIndex] = true
+                record({ revealed: next, players })
+              }}
+              aria-label={revealed[letterIndex] ? `Letter ${letter}` : `Reveal letter ${letterIndex + 1}`}
+              aria-pressed={revealed[letterIndex]}
+            >
+              <span>{revealed[letterIndex] ? letter : ''}</span>
+            </button>
           ))}
         </div>
 
-        <div className="progress-row"><span>{revealed.filter(Boolean).length} / 10 LETTERS REVEALED</span><span className="progress-track"><span style={{ width: `${revealed.filter(Boolean).length * 10}%` }} /></span></div>
-
         <section className="players-panel" aria-labelledby="players-heading">
           <div className="players-header">
-            <div><div className="section-kicker">THE SCOREBOARD</div><h2 id="players-heading">Players <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2></div>
-            <span className="sort-note">RANKED BY SCORE ↓</span>
+            <h2 id="players-heading">Players <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2>
           </div>
           {players.length > 0 ? (
             <ol className="player-list">

@@ -9,8 +9,20 @@ const robotoSerif = Roboto_Serif({
 })
 
 export const metadata: Metadata = {
-  title: 'Ô chữ bí ẩn — Trò chơi đoán chữ',
-  description: 'Trò chơi đoán chữ đơn giản: mở từng ô chữ, thêm người chơi và theo dõi điểm số.',
+  title: 'Trò chơi đoán chứ',
+  description: 'Đoán trúng có quà',
+  openGraph: {
+    title: 'Trò chơi đoán chứ',
+    description: 'Đoán trúng có quà',
+    type: 'website',
+    locale: 'vi_VN',
+    images: [{
+      url: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Culinary-okqptcDIMlKRma2ASYrg5J6IlVytpO.png',
+      width: 1920,
+      height: 1080,
+      alt: 'Chiếc nón lên đỉnh Olympia — trò chơi đoán chữ',
+    }],
+  },
   generator: 'v0.app',
   icons: {
     icon: [

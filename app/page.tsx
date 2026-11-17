@@ -167,8 +167,6 @@ export default function Page() {
         <section className="players-panel" aria-labelledby="players-heading">
           <div className="players-header">
             <h2 id="players-heading">Người chơi <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2>
-          </div>
-          <div className="answer-action">
             <button className="answer-button" type="button" onClick={answer} disabled={!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null}>Trả lời</button>
           </div>
           {players.length > 0 ? (
@@ -184,7 +182,7 @@ export default function Page() {
                     {winnerId === player.id ? <Crown className="winner-crown" size={16} aria-label="Người chiến thắng" /> : selectedPlayerId === player.id ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
                   </button>
                   <span className="player-score">{player.score}<small> ĐIỂM</small></span>
-                  <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} disabled={player.disabled || answerRevealed} aria-label={`${player.disabled ? 'Đã tạm dừng' : 'Tạm dừng'} ${player.name}`} title={answerRevealed ? 'Ván chơi đã kết thúc' : player.disabled ? 'Người chơi đã tạm dừng' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>
+                  {!player.disabled && <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} disabled={answerRevealed} aria-label={`Tạm dừng ${player.name}`} title={answerRevealed ? 'Ván chơi đã kết thúc' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>}
                 </li>
               ))}
             </ol>

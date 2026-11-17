@@ -68,9 +68,8 @@ button { color: inherit; }
 }
 @media (prefers-reduced-motion: reduce) { .letter-tile.answer-reveal span { animation: none; } }
 .players-panel { max-width: 590px; margin: 46px auto 0; }
-.players-header { display: flex; align-items: center; padding-bottom: 13px; border-bottom: 1px solid rgba(64,27,10,.55); }
-.players-header h2 { margin: 0;  font-size: 25px; font-weight: 400; letter-spacing: -.035em; }
-.answer-action { display: flex; justify-content: flex-end; margin: 12px 0; }
+.players-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 13px; border-bottom: 1px solid rgba(64,27,10,.55); }
+.players-header h2 { margin: 0; font-size: 25px; font-weight: 400; letter-spacing: -.035em; }
 .answer-button { min-height: 38px; padding: 0 16px; border: 1px solid #401b0a; border-radius: 3px; color: #fdeedf; background: #401b0a; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity .16s ease, transform .16s ease; }
 .answer-button:hover:not(:disabled) { transform: translateY(-1px); }
 .answer-button:disabled { opacity: .4; cursor: not-allowed; }

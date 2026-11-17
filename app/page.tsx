@@ -4,14 +4,16 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Crown, Plus, RotateCcw, Square } from 'lucide-react'
 
 type Player = { id: number; name: string; score: number; disabled: boolean }
-type GameState = { revealed: boolean[]; players: Player[]; selectedPlayerId: number | null; winnerId: number | null }
+type GameState = { revealed: boolean[]; players: Player[]; selectedPlayerId: number | null; winnerId: number | null; answerRevealed: boolean }
 
+const letters = ['M', 'Ơ', 'Đ', 'Â', 'Y', 'M', 'A', 'H', 'U', 'P']
 const solution = ['M', 'Ỡ', 'Đ', 'Ấ', 'Y', 'M', 'À', 'H', 'Ú', 'P']
 export default function Page() {
   const [revealed, setRevealed] = useState<boolean[]>(Array(10).fill(false))
   const [players, setPlayers] = useState<Player[]>([])
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null)
   const [winnerId, setWinnerId] = useState<number | null>(null)
+  const [answerRevealed, setAnswerRevealed] = useState(false)
   const [name, setName] = useState('')
   const [history, setHistory] = useState<GameState[]>([])
   const playerRows = useRef(new Map<number, HTMLLIElement>())
@@ -42,11 +44,13 @@ export default function Page() {
       players: players.map((player) => ({ ...player })),
       selectedPlayerId,
       winnerId,
+      answerRevealed,
     }])
     setRevealed(next.revealed)
     setPlayers(next.players)
     setSelectedPlayerId(next.selectedPlayerId)
     setWinnerId(next.winnerId)
+    setAnswerRevealed(next.answerRevealed)
   }
 
   function addPlayer(event: React.FormEvent<HTMLFormElement>) {
@@ -58,24 +62,38 @@ export default function Page() {
       players: [...players, { id: Date.now(), name: cleanName, score: 0, disabled: false }],
       selectedPlayerId,
       winnerId,
+      answerRevealed,
     })
     setName('')
   }
 
   function selectPlayer(id: number) {
-    if (winnerId !== null) return
-    record({ revealed, players, selectedPlayerId: id, winnerId })
+    if (winnerId !== null || answerRevealed) return
+    record({ revealed, players, selectedPlayerId: id, winnerId, answerRevealed })
   }
 
-  function togglePlayer(id: number) {
+  function stopPlayer(id: number) {
     const player = players.find((item) => item.id === id)
-    if (!player) return
-    const disabling = !player.disabled
+    if (!player || player.disabled) return
     record({
       revealed,
-      players: players.map((item) => item.id === id ? { ...item, disabled: disabling } : item),
-      selectedPlayerId: disabling && selectedPlayerId === id ? null : selectedPlayerId,
+      players: players.map((item) => item.id === id ? { ...item, disabled: true } : item),
+      selectedPlayerId: selectedPlayerId === id ? null : selectedPlayerId,
       winnerId,
+      answerRevealed,
+    })
+  }
+
+  function answer() {
+    const activePlayer = players.find((player) => player.id === selectedPlayerId && !player.disabled)
+    if (!activePlayer || winnerId !== null) return
+    const unrevealedCount = revealed.filter((isRevealed) => !isRevealed).length
+    record({
+      revealed: Array(letters.length).fill(true),
+      players: players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + unrevealedCount + 3 } : player),
+      selectedPlayerId,
+      winnerId: activePlayer.id,
+      answerRevealed: true,
     })
   }
 
@@ -86,6 +104,7 @@ export default function Page() {
     setPlayers(previous.players)
     setSelectedPlayerId(previous.selectedPlayerId)
     setWinnerId(previous.winnerId)
+    setAnswerRevealed(previous.answerRevealed)
     setHistory((items) => items.slice(0, -1))
   }
 
@@ -97,36 +116,43 @@ export default function Page() {
 
       <section className="game-content">
         <div className="puzzle" aria-label={`Đã mở ${revealed.filter(Boolean).length} trên 10 chữ cái`}>
-          {solution.map((letter, letterIndex) => (
-            <button
-              className={`letter-tile${revealed[letterIndex] ? ' is-revealed' : ''}`}
-              key={letterIndex}
-              type="button"
-              onClick={() => {
-                const activePlayer = players.find((player) => player.id === selectedPlayerId && !player.disabled)
-                if (revealed[letterIndex] || !activePlayer || winnerId !== null) return
-                const nextRevealed = [...revealed]
-                nextRevealed[letterIndex] = true
-                const answerComplete = nextRevealed.every(Boolean)
-                record({
-                  revealed: nextRevealed,
-                  players: players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + 1 } : player),
-                  selectedPlayerId,
-                  winnerId: answerComplete ? activePlayer.id : null,
-                })
-              }}
-              disabled={!selectedPlayerId || winnerId !== null || revealed[letterIndex]}
-              aria-label={revealed[letterIndex] ? `Chữ cái ${letter}` : !selectedPlayerId ? 'Chọn người chơi để mở chữ cái' : `Mở chữ cái thứ ${letterIndex + 1}`}
-              aria-pressed={revealed[letterIndex]}
-            >
-              <span>{revealed[letterIndex] ? letter : ''}</span>
-            </button>
-          ))}
+          {letters.map((letter, letterIndex) => {
+            const displayedLetter = answerRevealed ? solution[letterIndex] : letter
+            return (
+              <button
+                className={`letter-tile${revealed[letterIndex] ? ' is-revealed' : ''}${answerRevealed ? ' answer-reveal' : ''}`}
+                key={letterIndex}
+                type="button"
+                onClick={() => {
+                  const activePlayer = players.find((player) => player.id === selectedPlayerId && !player.disabled)
+                  if (revealed[letterIndex] || !activePlayer || winnerId !== null) return
+                  const nextRevealed = [...revealed]
+                  nextRevealed[letterIndex] = true
+                  record({
+                    revealed: nextRevealed,
+                    players: players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + 1 } : player),
+                    selectedPlayerId,
+                    winnerId,
+                    answerRevealed,
+                  })
+                }}
+                disabled={!selectedPlayerId || winnerId !== null || revealed[letterIndex]}
+                aria-label={revealed[letterIndex] ? `Chữ cái ${displayedLetter}` : !selectedPlayerId ? 'Chọn người chơi để mở chữ cái' : `Mở chữ cái thứ ${letterIndex + 1}`}
+                aria-pressed={revealed[letterIndex]}
+                style={{ '--letter-index': letterIndex } as React.CSSProperties}
+              >
+                <span>{revealed[letterIndex] ? displayedLetter : ''}</span>
+              </button>
+            )
+          })}
         </div>
 
         <section className="players-panel" aria-labelledby="players-heading">
           <div className="players-header">
             <h2 id="players-heading">Người chơi <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2>
+          </div>
+          <div className="answer-action">
+            <button className="answer-button" type="button" onClick={answer} disabled={!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null}>Trả lời</button>
           </div>
           {players.length > 0 ? (
             <ol className="player-list">
@@ -141,7 +167,7 @@ export default function Page() {
                     {winnerId === player.id ? <Crown className="winner-crown" size={16} aria-label="Người chiến thắng" /> : selectedPlayerId === player.id ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
                   </button>
                   <span className="player-score">{player.score}<small> ĐIỂM</small></span>
-                  <button className="stop-button" type="button" onClick={() => togglePlayer(player.id)} aria-label={`${player.disabled ? 'Bật lại' : 'Tạm dừng'} ${player.name}`} title={player.disabled ? 'Bật lại người chơi' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>
+                  <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} disabled={player.disabled} aria-label={`${player.disabled ? 'Đã tạm dừng' : 'Tạm dừng'} ${player.name}`} title={player.disabled ? 'Người chơi đã tạm dừng' : 'Tạm dừng người chơi'}><Square size={15} fill="currentColor" /></button>
                 </li>
               ))}
             </ol>

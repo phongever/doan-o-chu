@@ -180,7 +180,7 @@ export default function Page() {
         <section className="players-panel" aria-labelledby="players-heading">
           <div className="players-header">
             <h2 id="players-heading">Người chơi <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2>
-            <button className="answer-button" type="button" onClick={answer} disabled={!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null}>Trả lời</button>
+            <button className="answer-button" type="button" onClick={answerRevealed ? () => setResultDialogOpen(true) : answer} disabled={!answerRevealed && (!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null)}>{answerRevealed ? 'Xem kết quả' : 'Trả lời'}</button>
           </div>
           {players.length > 0 ? (
             <ol className="player-list">

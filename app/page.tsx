@@ -91,7 +91,6 @@ export default function Page() {
             <button className="add-button" type="submit" disabled={!name.trim()}><Plus size={17} /><span>Add player</span></button>
           </form>
         </section>
-        <footer className="game-footer"><span>GOOD LUCK OUT THERE.</span><span>MAKE EVERY LETTER COUNT <span aria-hidden="true">↗</span></span></footer>
       </section>
     </main>
   )

@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { BookOpenText, Plus, RotateCcw, Settings2, Square } from 'lucide-react'
+import { GameGuessDialog } from '@/components/game-guess-dialog'
 import { GameResultDialog } from '@/components/game-result-dialog'
 import { GameRulesDialog } from '@/components/game-rules-dialog'
 import { GameSettingsDialog, type GameSettingsDraft, type GameSettingsValues } from '@/components/game-settings-dialog'
@@ -29,6 +30,8 @@ export default function Page() {
   const [winnerId, setWinnerId] = useState<number | null>(null)
   const [answerRevealed, setAnswerRevealed] = useState(false)
   const [resultDialogOpen, setResultDialogOpen] = useState(false)
+  const [guessDialogOpen, setGuessDialogOpen] = useState(false)
+  const [guess, setGuess] = useState('')
   const [rulesDialogOpen, setRulesDialogOpen] = useState(false)
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false)
   const [name, setName] = useState('')
@@ -126,16 +129,28 @@ export default function Page() {
     })
   }
 
-  function answer() {
+  function openGuessDialog() {
+    setGuess('')
+    setGuessDialogOpen(true)
+  }
+
+  function submitGuess(submittedGuess: string) {
     const activePlayer = players.find((player) => player.id === selectedPlayerId && !player.disabled)
     if (!activePlayer || winnerId !== null) return
+    const normalizeAnswer = (value: string) => Array.from(value.normalize('NFC').toUpperCase()).filter((character) => !/\s/.test(character)).join('')
+    const isCorrect = normalizeAnswer(submittedGuess) === normalizeAnswer(solution.join(''))
+    const unopenedLetterPoints = revealed.filter((isRevealed) => !isRevealed).length
     record({
       revealed: Array(puzzleSettings.boxCount).fill(true),
-      players: players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + 3 } : player),
-      selectedPlayerId,
-      winnerId: activePlayer.id,
+      players: isCorrect
+        ? players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + 3 + unopenedLetterPoints } : player)
+        : players,
+      selectedPlayerId: isCorrect ? selectedPlayerId : null,
+      winnerId: isCorrect ? activePlayer.id : null,
       answerRevealed: true,
     })
+    setGuessDialogOpen(false)
+    setGuess('')
   }
 
   function undo() {
@@ -168,7 +183,7 @@ export default function Page() {
 
   return (
     <main className="game-shell">
-      {answerRevealed && <div className="fireworks" aria-hidden="true"><span className="firework firework-one" /><span className="firework firework-two" /><span className="firework firework-three" /><span className="firework firework-four" /><span className="firework firework-five" /><span className="firework firework-six" /></div>}
+      {winnerId !== null && <div className="fireworks" aria-hidden="true"><span className="firework firework-one" /><span className="firework firework-two" /><span className="firework firework-three" /><span className="firework firework-four" /><span className="firework firework-five" /><span className="firework firework-six" /></div>}
       <header className="topbar">
         <div className="topbar-actions">
           <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Hoàn tác thao tác gần nhất"><RotateCcw size={16} /> <span>Hoàn tác</span></button>
@@ -214,7 +229,7 @@ export default function Page() {
         <section className="players-panel" aria-labelledby="players-heading">
           <div className="players-header">
             <h2 id="players-heading">Người chơi <span className="player-count">{players.length.toString().padStart(2, '0')}</span></h2>
-            <button className="answer-button" type="button" onClick={answerRevealed ? () => setResultDialogOpen(true) : answer} disabled={!answerRevealed && (!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null)}>{answerRevealed ? 'Xem kết quả' : 'Trả lời'}</button>
+            <button className="answer-button" type="button" onClick={answerRevealed ? () => setResultDialogOpen(true) : openGuessDialog} disabled={!answerRevealed && (!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null)}>{answerRevealed ? 'Xem kết quả' : 'Trả lời'}</button>
           </div>
           {players.length > 0 ? (
             <ol className="player-list">
@@ -224,7 +239,7 @@ export default function Page() {
                   else playerRows.current.delete(player.id)
                 }}>
                   <span className="player-rank">{String(index + 1).padStart(2, '0')}</span>
-                  <button className="player-select" type="button" onClick={() => selectPlayer(player.id)} disabled={player.disabled || winnerId !== null} aria-pressed={selectedPlayerId === player.id}>
+                  <button className="player-select" type="button" onClick={() => selectPlayer(player.id)} disabled={player.disabled || winnerId !== null || answerRevealed} aria-pressed={selectedPlayerId === player.id}>
                     <span className="player-name">{player.name}</span>
                     {selectedPlayerId === player.id && winnerId === null ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
                   </button>
@@ -242,6 +257,13 @@ export default function Page() {
           </form>
         </section>
       </section>
+      <GameGuessDialog
+        open={guessDialogOpen}
+        onOpenChange={setGuessDialogOpen}
+        guess={guess}
+        onGuessChange={setGuess}
+        onSubmitGuess={submitGuess}
+      />
       <GameRulesDialog open={rulesDialogOpen} onOpenChange={setRulesDialogOpen} />
       <GameSettingsDialog
         open={settingsDialogOpen}

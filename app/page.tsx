@@ -175,7 +175,6 @@ export default function Page() {
       <header className="topbar">
         <div className="topbar-actions">
           <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Hoàn tác thao tác gần nhất"><RotateCcw size={16} /> <span>Hoàn tác</span></button>
-          <button className="replay-button" type="button" onClick={playAgain} disabled={!canReset}>Chơi lại</button>
           <button className="utility-button" type="button" onClick={() => setRulesDialogOpen(true)} aria-haspopup="dialog"><BookOpenText size={15} /><span>Luật chơi</span></button>
           <button className="utility-button" type="button" onClick={openSettings} aria-haspopup="dialog"><Settings2 size={15} /><span>Cài đặt</span></button>
         </div>

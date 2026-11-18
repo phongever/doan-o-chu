@@ -12,7 +12,6 @@ type GameSettingsDialogProps = {
 }
 
 export type GameSettingsDraft = {
-  boxCount: string
   lettersBefore: string
   answer: string
 }
@@ -35,29 +34,28 @@ export function GameSettingsDialog({
   onSave,
 }: GameSettingsDialogProps) {
   const [showAnswer, setShowAnswer] = useState(false)
-  const parsedCount = Number(values.boxCount)
-  const countIsValid = Number.isInteger(parsedCount) && parsedCount >= 1 && parsedCount <= 100
   const beforeCharacters = splitCharacters(values.lettersBefore)
   const answerCharacters = splitCharacters(values.answer)
-  const countError = countIsValid ? '' : 'Nhập số ô chữ từ 1 đến 100.'
-  const beforeError = !countIsValid
-    ? 'Vui lòng nhập số ô chữ hợp lệ trước.'
-    : beforeCharacters.length !== parsedCount
-      ? `Cần đúng ${parsedCount} ký tự (${beforeCharacters.length}/${parsedCount}).`
+  const lengthsMatch = beforeCharacters.length === answerCharacters.length
+  const beforeIsValid = beforeCharacters.length >= 1 && beforeCharacters.length <= 100
+  const answerIsValid = answerCharacters.length >= 1 && answerCharacters.length <= 100
+  const beforeError = !beforeIsValid
+    ? 'Nhập từ 1 đến 100 ký tự.'
+    : !lengthsMatch
+      ? 'Độ dài của Ô chữ và Đáp án phải bằng nhau.'
       : ''
-  const answerError = !countIsValid
-    ? 'Vui lòng nhập số ô chữ hợp lệ trước.'
-    : answerCharacters.length !== parsedCount
-      ? `Cần đúng ${parsedCount} ký tự (${answerCharacters.length}/${parsedCount}).`
+  const answerError = !answerIsValid
+    ? 'Nhập từ 1 đến 100 ký tự.'
+    : !lengthsMatch
+      ? 'Độ dài của Ô chữ và Đáp án phải bằng nhau.'
       : ''
   const previewCharacters = showAnswer ? answerCharacters : beforeCharacters
-  const previewCount = countIsValid ? parsedCount : 0
-  const canSave = countIsValid && !beforeError && !answerError
+  const canSave = beforeIsValid && answerIsValid && lengthsMatch
 
   function saveSettings() {
     if (!canSave) return
     onSave({
-      boxCount: parsedCount,
+      boxCount: beforeCharacters.length,
       lettersBefore: values.lettersBefore.normalize('NFC'),
       answer: values.answer.normalize('NFC'),
     })
@@ -70,31 +68,16 @@ export function GameSettingsDialog({
         <Dialog.Popup className="game-dialog-popup settings-dialog-popup">
           <Dialog.Title className="game-dialog-title">Cài đặt</Dialog.Title>
           <Dialog.Description className="settings-dialog-description">
-            Cấu hình số ô chữ, chữ cái hiển thị ban đầu và đáp án.
+            Cấu hình ô chữ hiển thị ban đầu và đáp án.
           </Dialog.Description>
           <div className="settings-form">
             <div className="settings-field">
-              <label className="settings-label" htmlFor="settings-box-count">Số ô chữ</label>
-              <input
-                className="settings-input"
-                id="settings-box-count"
-                type="number"
-                min={1}
-                max={100}
-                step={1}
-                value={values.boxCount}
-                onChange={(event) => onValuesChange({ ...values, boxCount: event.target.value })}
-                aria-invalid={Boolean(countError)}
-                aria-describedby={countError ? 'settings-box-count-error' : undefined}
-              />
-              {countError && <p className="settings-error" id="settings-box-count-error">{countError}</p>}
-            </div>
-            <div className="settings-field">
-              <label className="settings-label" htmlFor="settings-before">Sau khi mở</label>
+              <label className="settings-label" htmlFor="settings-before">Ô chữ</label>
               <input
                 className="settings-input"
                 id="settings-before"
                 type="text"
+                maxLength={100}
                 value={values.lettersBefore}
                 onChange={(event) => onValuesChange({ ...values, lettersBefore: event.target.value })}
                 aria-invalid={Boolean(beforeError)}
@@ -103,11 +86,12 @@ export function GameSettingsDialog({
               {beforeError && <p className="settings-error" id="settings-before-error">{beforeError}</p>}
             </div>
             <div className="settings-field">
-              <label className="settings-label" htmlFor="settings-answer">Câu trả lời</label>
+              <label className="settings-label" htmlFor="settings-answer">Đáp án</label>
               <input
                 className="settings-input"
                 id="settings-answer"
                 type="text"
+                maxLength={100}
                 value={values.answer}
                 onChange={(event) => onValuesChange({ ...values, answer: event.target.value })}
                 aria-invalid={Boolean(answerError)}
@@ -119,12 +103,12 @@ export function GameSettingsDialog({
               <div className="settings-preview-header">
                 <h3 className="settings-label" id="settings-preview-title">Xem trước</h3>
                 <button className="settings-preview-toggle" type="button" onClick={() => setShowAnswer((visible) => !visible)}>
-                  {showAnswer ? 'Xem sau khi mở' : 'Xem trả lời'}
+                  {showAnswer ? 'Ô chữ' : 'Đáp án'}
                 </button>
               </div>
-              <div className="settings-preview-grid" aria-label={showAnswer ? 'Xem trước câu trả lời' : 'Xem trước chữ sau khi mở'}>
-                {Array.from({ length: previewCount }, (_, index) => (
-                  <span className="settings-preview-box" key={index}>{previewCharacters[index] ?? ''}</span>
+              <div className="settings-preview-grid" aria-label={showAnswer ? 'Xem trước Đáp án' : 'Xem trước Ô chữ'}>
+                {previewCharacters.map((character, index) => (
+                  <span className="settings-preview-box" key={index}>{character}</span>
                 ))}
               </div>
             </section>

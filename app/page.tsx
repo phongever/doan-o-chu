@@ -18,7 +18,6 @@ export default function Page() {
     answer: defaultSolution.join(''),
   })
   const [settingsDraft, setSettingsDraft] = useState<GameSettingsDraft>({
-    boxCount: String(defaultLetters.length),
     lettersBefore: defaultLetters.join(''),
     answer: defaultSolution.join(''),
   })
@@ -58,7 +57,6 @@ export default function Page() {
 
   function openSettings() {
     setSettingsDraft({
-      boxCount: String(puzzleSettings.boxCount),
       lettersBefore: puzzleSettings.lettersBefore,
       answer: puzzleSettings.answer,
     })
@@ -170,7 +168,7 @@ export default function Page() {
 
   return (
     <main className="game-shell">
-      {answerRevealed && <div className="fireworks" aria-hidden="true"><span className="firework firework-one" /><span className="firework firework-two" /><span className="firework firework-three" /></div>}
+      {answerRevealed && <div className="fireworks" aria-hidden="true"><span className="firework firework-one" /><span className="firework firework-two" /><span className="firework firework-three" /><span className="firework firework-four" /><span className="firework firework-five" /><span className="firework firework-six" /></div>}
       <header className="topbar">
         <div className="topbar-actions">
           <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Hoàn tác thao tác gần nhất"><RotateCcw size={16} /> <span>Hoàn tác</span></button>

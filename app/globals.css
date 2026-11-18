@@ -43,10 +43,13 @@ button { color: inherit; }
 .utility-button:hover { color: #fdeedf; background: #401b0a; }
 .game-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 45px 0 36px; }
 .fireworks { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
-.firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; border-radius: 50%; color: #cb7443; background: radial-gradient(circle, currentColor 0 2px, transparent 3px), repeating-conic-gradient(currentColor 0deg 2deg, transparent 2deg 22.5deg); mask-image: radial-gradient(circle, transparent 0 8%, #000 12% 72%, transparent 76%); opacity: 0; animation: firework-burst 3.2s ease-out infinite; }
+.firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; border-radius: 50%; color: #cb7443; background: radial-gradient(circle, currentColor 0 2px, transparent 3px), repeating-conic-gradient(currentColor 0deg 2deg, transparent 2deg 15deg); mask-image: radial-gradient(circle, transparent 0 8%, #000 12% 72%, transparent 76%); opacity: 0; animation: firework-burst 5.6s ease-out infinite; }
 .firework-one { top: 8%; left: 0; }
-.firework-two { top: 16%; right: 0; color: #648f8a; animation-delay: 1s; }
-.firework-three { top: 58%; left: 1%; color: #c78a36; animation-delay: 2s; }
+.firework-two { top: 16%; right: 0; color: #648f8a; animation-delay: .9s; }
+.firework-three { top: 58%; left: 1%; color: #c78a36; animation-delay: 1.8s; }
+.firework-four { top: 40%; left: 31%; color: #a66b20; animation-delay: 2.7s; }
+.firework-five { top: 52%; right: 2%; color: #648f8a; animation-delay: 3.6s; }
+.firework-six { bottom: 0; left: 38%; color: #cb7443; animation-delay: 4.5s; }
 @keyframes firework-burst {
   0% { opacity: 0; transform: scale(.12) rotate(-12deg); }
   14% { opacity: .78; }

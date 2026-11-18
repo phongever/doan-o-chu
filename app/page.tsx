@@ -1,21 +1,36 @@
 'use client'
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Plus, RotateCcw, Square } from 'lucide-react'
+import { BookOpenText, Plus, RotateCcw, Settings2, Square } from 'lucide-react'
 import { GameResultDialog } from '@/components/game-result-dialog'
+import { GameRulesDialog } from '@/components/game-rules-dialog'
+import { GameSettingsDialog, type GameSettingsDraft, type GameSettingsValues } from '@/components/game-settings-dialog'
 
 type Player = { id: number; name: string; score: number; disabled: boolean }
 type GameState = { revealed: boolean[]; players: Player[]; selectedPlayerId: number | null; winnerId: number | null; answerRevealed: boolean }
 
-const letters = ['M', 'Ơ', 'Đ', 'Â', 'Y', 'M', 'A', 'H', 'U', 'P']
-const solution = ['M', 'Ỡ', 'Đ', 'Ấ', 'Y', 'M', 'À', 'H', 'Ú', 'P']
+const defaultLetters = ['M', 'Ơ', 'Đ', 'Â', 'Y', 'M', 'A', 'H', 'U', 'P']
+const defaultSolution = ['M', 'Ỡ', 'Đ', 'Ấ', 'Y', 'M', 'À', 'H', 'Ú', 'P']
 export default function Page() {
-  const [revealed, setRevealed] = useState<boolean[]>(Array(10).fill(false))
+  const [puzzleSettings, setPuzzleSettings] = useState<GameSettingsValues>({
+    boxCount: defaultLetters.length,
+    lettersBefore: defaultLetters.join(''),
+    answer: defaultSolution.join(''),
+  })
+  const [settingsDraft, setSettingsDraft] = useState<GameSettingsDraft>({
+    lettersBefore: defaultLetters.join(''),
+    answer: defaultSolution.join(''),
+  })
+  const letters = Array.from(puzzleSettings.lettersBefore.normalize('NFC')).filter((character) => character !== ' ')
+  const solution = Array.from(puzzleSettings.answer.normalize('NFC')).filter((character) => character !== ' ')
+  const [revealed, setRevealed] = useState<boolean[]>(Array(defaultLetters.length).fill(false))
   const [players, setPlayers] = useState<Player[]>([])
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null)
   const [winnerId, setWinnerId] = useState<number | null>(null)
   const [answerRevealed, setAnswerRevealed] = useState(false)
   const [resultDialogOpen, setResultDialogOpen] = useState(false)
+  const [rulesDialogOpen, setRulesDialogOpen] = useState(false)
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false)
   const [name, setName] = useState('')
   const [history, setHistory] = useState<GameState[]>([])
   const playerRows = useRef(new Map<number, HTMLLIElement>())
@@ -39,6 +54,30 @@ export default function Page() {
     })
     previousPositions.current = nextPositions
   }, [orderedPlayers])
+
+  function openSettings() {
+    setSettingsDraft({
+      lettersBefore: puzzleSettings.lettersBefore,
+      answer: puzzleSettings.answer,
+    })
+    setSettingsDialogOpen(true)
+  }
+
+  function applySettings(next: GameSettingsValues) {
+    const normalizedSettings = {
+      ...next,
+      lettersBefore: next.lettersBefore.normalize('NFC'),
+      answer: next.answer.normalize('NFC'),
+    }
+    setPuzzleSettings(normalizedSettings)
+    setRevealed(Array(next.boxCount).fill(false))
+    setSelectedPlayerId(null)
+    setWinnerId(null)
+    setAnswerRevealed(false)
+    setResultDialogOpen(false)
+    setSettingsDialogOpen(false)
+    setHistory([])
+  }
 
   function record(next: GameState) {
     setHistory((previous) => [...previous, {
@@ -90,10 +129,9 @@ export default function Page() {
   function answer() {
     const activePlayer = players.find((player) => player.id === selectedPlayerId && !player.disabled)
     if (!activePlayer || winnerId !== null) return
-    const unrevealedCount = revealed.filter((isRevealed) => !isRevealed).length
     record({
-      revealed: Array(letters.length).fill(true),
-      players: players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + unrevealedCount + 3 } : player),
+      revealed: Array(puzzleSettings.boxCount).fill(true),
+      players: players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + 3 } : player),
       selectedPlayerId,
       winnerId: activePlayer.id,
       answerRevealed: true,
@@ -113,7 +151,7 @@ export default function Page() {
   }
 
   function playAgain() {
-    setRevealed(Array(letters.length).fill(false))
+    setRevealed(Array(puzzleSettings.boxCount).fill(false))
     setPlayers([])
     setSelectedPlayerId(null)
     setWinnerId(null)
@@ -130,16 +168,18 @@ export default function Page() {
 
   return (
     <main className="game-shell">
-      {answerRevealed && <div className="fireworks" aria-hidden="true"><span className="firework firework-one" /><span className="firework firework-two" /><span className="firework firework-three" /></div>}
+      {answerRevealed && <div className="fireworks" aria-hidden="true"><span className="firework firework-one" /><span className="firework firework-two" /><span className="firework firework-three" /><span className="firework firework-four" /><span className="firework firework-five" /><span className="firework firework-six" /></div>}
       <header className="topbar">
         <div className="topbar-actions">
           <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Hoàn tác thao tác gần nhất"><RotateCcw size={16} /> <span>Hoàn tác</span></button>
           <button className="replay-button" type="button" onClick={playAgain} disabled={!canReset}>Chơi lại</button>
+          <button className="utility-button" type="button" onClick={() => setRulesDialogOpen(true)} aria-haspopup="dialog"><BookOpenText size={15} /><span>Luật chơi</span></button>
+          <button className="utility-button" type="button" onClick={openSettings} aria-haspopup="dialog"><Settings2 size={15} /><span>Cài đặt</span></button>
         </div>
       </header>
 
       <section className="game-content">
-        <div className="puzzle" aria-label={`Đã mở ${revealed.filter(Boolean).length} trên 10 chữ cái`}>
+        <div className="puzzle" aria-label={`Đã mở ${revealed.filter(Boolean).length} trên ${puzzleSettings.boxCount} chữ cái`}>
           {letters.map((letter, letterIndex) => {
             const displayedLetter = answerRevealed ? solution[letterIndex] : letter
             return (
@@ -202,6 +242,14 @@ export default function Page() {
           </form>
         </section>
       </section>
+      <GameRulesDialog open={rulesDialogOpen} onOpenChange={setRulesDialogOpen} />
+      <GameSettingsDialog
+        open={settingsDialogOpen}
+        onOpenChange={setSettingsDialogOpen}
+        values={settingsDraft}
+        onValuesChange={setSettingsDraft}
+        onSave={applySettings}
+      />
       <GameResultDialog
         open={resultDialogOpen}
         onOpenChange={setResultDialogOpen}

@@ -21,8 +21,8 @@ export default function Page() {
     lettersBefore: defaultLetters.join(''),
     answer: defaultSolution.join(''),
   })
-  const letters = Array.from(puzzleSettings.lettersBefore.normalize('NFC'))
-  const solution = Array.from(puzzleSettings.answer.normalize('NFC'))
+  const letters = Array.from(puzzleSettings.lettersBefore.normalize('NFC')).filter((character) => character !== ' ')
+  const solution = Array.from(puzzleSettings.answer.normalize('NFC')).filter((character) => character !== ' ')
   const [revealed, setRevealed] = useState<boolean[]>(Array(defaultLetters.length).fill(false))
   const [players, setPlayers] = useState<Player[]>([])
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null)

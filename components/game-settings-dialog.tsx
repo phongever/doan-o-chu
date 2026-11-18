@@ -73,7 +73,7 @@ export function GameSettingsDialog({
                 id="settings-before"
                 type="text"
                 value={values.lettersBefore}
-                onChange={(event) => onValuesChange({ ...values, lettersBefore: event.target.value })}
+                onChange={(event) => onValuesChange({ ...values, lettersBefore: event.target.value.toUpperCase() })}
                 aria-invalid={Boolean(beforeError)}
                 aria-describedby={beforeError ? 'settings-before-error' : undefined}
               />
@@ -86,7 +86,7 @@ export function GameSettingsDialog({
                 id="settings-answer"
                 type="text"
                 value={values.answer}
-                onChange={(event) => onValuesChange({ ...values, answer: event.target.value })}
+                onChange={(event) => onValuesChange({ ...values, answer: event.target.value.toUpperCase() })}
                 aria-invalid={Boolean(answerError)}
                 aria-describedby={answerError ? 'settings-answer-error' : undefined}
               />

@@ -26,6 +26,10 @@ function splitCharacters(value: string) {
   return Array.from(value.normalize('NFC'))
 }
 
+function sanitizePuzzleInput(value: string) {
+  return value.replace(/[^\p{L}\p{M} ]/gu, '')
+}
+
 export function GameSettingsDialog({
   open,
   onOpenChange,
@@ -36,21 +40,22 @@ export function GameSettingsDialog({
   const [showAnswer, setShowAnswer] = useState(false)
   const beforeCharacters = splitCharacters(values.lettersBefore)
   const answerCharacters = splitCharacters(values.answer)
-  const lengthsMatch = beforeCharacters.length === answerCharacters.length
-  const beforeIsValid = beforeCharacters.length >= 1 && beforeCharacters.length <= 100
-  const answerIsValid = answerCharacters.length >= 1 && answerCharacters.length <= 100
-  const beforeError = !beforeIsValid
-    ? 'Nhập từ 1 đến 100 ký tự.'
-    : !lengthsMatch
-      ? 'Độ dài của Ô chữ và Đáp án phải bằng nhau.'
+  const beforeLetterCount = beforeCharacters.filter((character) => character !== ' ').length
+  const answerLetterCount = answerCharacters.filter((character) => character !== ' ').length
+  const lengthsMatch = beforeLetterCount === answerLetterCount
+  const spacesMatch = beforeCharacters.length === answerCharacters.length
+    && beforeCharacters.every((character, index) => (character === ' ') === (answerCharacters[index] === ' '))
+  const beforeIsValid = beforeLetterCount >= 1 && beforeCharacters.length <= 100
+  const answerIsValid = answerLetterCount >= 1 && answerCharacters.length <= 100
+  const structureError = !lengthsMatch
+    ? 'Số lượng chữ cái của Ô chữ và Đáp án phải bằng nhau.'
+    : !spacesMatch
+      ? 'Khoảng trắng phải ở cùng vị trí trong Ô chữ và Đáp án.'
       : ''
-  const answerError = !answerIsValid
-    ? 'Nhập từ 1 đến 100 ký tự.'
-    : !lengthsMatch
-      ? 'Độ dài của Ô chữ và Đáp án phải bằng nhau.'
-      : ''
+  const beforeError = !beforeIsValid ? 'Nhập ít nhất một chữ cái và tối đa 100 ô.' : structureError
+  const answerError = !answerIsValid ? 'Nhập ít nhất một chữ cái và tối đa 100 ô.' : structureError
   const previewCharacters = showAnswer ? answerCharacters : beforeCharacters
-  const canSave = beforeIsValid && answerIsValid && lengthsMatch
+  const canSave = beforeIsValid && answerIsValid && lengthsMatch && spacesMatch
 
   function saveSettings() {
     if (!canSave) return
@@ -79,7 +84,7 @@ export function GameSettingsDialog({
                 type="text"
                 maxLength={100}
                 value={values.lettersBefore}
-                onChange={(event) => onValuesChange({ ...values, lettersBefore: event.target.value })}
+                onChange={(event) => onValuesChange({ ...values, lettersBefore: sanitizePuzzleInput(event.target.value) })}
                 aria-invalid={Boolean(beforeError)}
                 aria-describedby={beforeError ? 'settings-before-error' : undefined}
               />
@@ -93,7 +98,7 @@ export function GameSettingsDialog({
                 type="text"
                 maxLength={100}
                 value={values.answer}
-                onChange={(event) => onValuesChange({ ...values, answer: event.target.value })}
+                onChange={(event) => onValuesChange({ ...values, answer: sanitizePuzzleInput(event.target.value) })}
                 aria-invalid={Boolean(answerError)}
                 aria-describedby={answerError ? 'settings-answer-error' : undefined}
               />

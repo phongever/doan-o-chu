@@ -183,7 +183,7 @@ export default function Page() {
             <button className="answer-button" type="button" onClick={answerRevealed ? () => setResultDialogOpen(true) : revealAnswer} disabled={!answerRevealed && (!players.some((player) => player.id === selectedPlayerId && !player.disabled) || winnerId !== null)}>{answerRevealed ? 'Xem kết quả' : 'Trả lời'}</button>
           </div>
           {players.length > 0 ? (
-            <ol className="player-list">
+            <ol className={`player-list${orderedPlayers.length > 4 ? ' is-scrollable' : ''}`}>
               {orderedPlayers.map((player, index) => (
                 <li className={`player-row${player.disabled ? ' is-disabled' : ''}${selectedPlayerId === player.id ? ' is-selected' : ''}`} key={player.id} ref={(element) => {
                   if (element) playerRows.current.set(player.id, element)

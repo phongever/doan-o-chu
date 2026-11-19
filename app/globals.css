@@ -119,12 +119,6 @@ button { color: inherit; }
 .result-award-icon { flex: 0 0 auto; color: #000; }
 .result-award-title { color: rgba(0,0,0,.7); font-size: 11px; font-weight: 700; }
 .result-dialog-close { min-height: 38px; align-self: flex-end; padding: 0 16px; border: 1px solid #000; border-radius: 3px; color: #fff; background: #000; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
-.gift-button { min-height: 30px; padding: 0 12px; border: 1px solid #000; border-radius: 3px; color: #000; background: #fff; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
-.gift-reveal { position: relative; }
-.gift-image { display: block; width: 100%; height: auto; border-radius: 5px; }
-.gift-hearts { position: absolute; inset: 0; pointer-events: none; }
-.flying-heart { position: absolute; left: var(--heart-x); top: var(--heart-y); color: #ff4f8b; animation: heart-fly 2.6s ease-in-out infinite; animation-delay: var(--heart-delay); }
-@keyframes heart-fly { 0% { opacity: 0; transform: translateY(12px) scale(.7) rotate(-10deg); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-36px) scale(1.15) rotate(10deg); } }
 .app-footer { position: relative; z-index: 1; padding: 0 0 24px; text-align: center; font-size: 13px; color: rgba(0,0,0,.6); }
 @media (prefers-reduced-motion: reduce) { .result-dialog-backdrop, .result-dialog-popup { transition: none; } .flying-heart { animation: none; opacity: .6; } }
 .empty-state { min-height: 58px; display: flex; align-items: center; gap: 10px; overflow: auto; color: rgba(0,0,0,.6); font-size: 12px; border-bottom: 1px solid rgba(0,0,0,.14); }

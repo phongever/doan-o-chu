@@ -208,6 +208,7 @@ export default function Page() {
           </form>
         </section>
       </section>
+      <footer className="app-footer">Made by Phong with 💖</footer>
       <GameRulesDialog open={rulesDialogOpen} onOpenChange={setRulesDialogOpen} />
       <GameResultDialog
         open={resultDialogOpen}

@@ -208,7 +208,7 @@ export default function Page() {
           </form>
         </section>
       </section>
-      <footer className="app-footer">Phong làm cái ni 🥰</footer>
+      <footer className="app-footer">My Quốc Phong Long làm cái ni 🥰</footer>
       <GameRulesDialog open={rulesDialogOpen} onOpenChange={setRulesDialogOpen} />
       <GameResultDialog
         open={resultDialogOpen}

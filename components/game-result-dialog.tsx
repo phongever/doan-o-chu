@@ -21,7 +21,7 @@ export function GameResultDialog({
       <Dialog.Portal>
         <Dialog.Backdrop className="result-dialog-backdrop" />
         <Dialog.Popup className="result-dialog-popup">
-          <Dialog.Title className="result-dialog-title">Chúc mừng</Dialog.Title>
+          <Dialog.Title className="result-dialog-title">🎉Chúc mừng🎉</Dialog.Title>
           <Dialog.Description className="result-dialog-body">
             <span className="result-award-card">
               <Crown className="result-award-icon" size={32} strokeWidth={2.25} aria-hidden="true" />

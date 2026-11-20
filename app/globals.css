@@ -47,20 +47,25 @@ button { color: inherit; }
 .utility-button:hover { color: #fff; background: #000; }
 .game-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 45px 0 36px; }
 .fireworks { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
-.firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; border-radius: 50%; color: #d50032; background: radial-gradient(circle, currentColor 0 4px, transparent 5px), repeating-conic-gradient(currentColor 0deg 5deg, transparent 5deg 15deg); filter: drop-shadow(0 0 9px currentColor); mask-image: radial-gradient(circle, transparent 0 8%, #000 12% 72%, transparent 76%); opacity: 0; animation: firework-burst 3.6s ease-out infinite; }
-.firework-one { top: 8%; left: 0; }
-.firework-two { top: 16%; right: 0; color: #003dcc; animation-delay: .6s; }
-.firework-three { top: 58%; left: 1%; color: #d65a00; animation-delay: 1.2s; }
-.firework-four { top: 40%; left: 31%; color: #6a009a; animation-delay: 1.8s; }
-.firework-five { top: 52%; right: 2%; color: #007c54; animation-delay: 2.4s; }
-.firework-six { bottom: 0; left: 38%; color: #c00078; animation-delay: 3s; }
-@keyframes firework-burst {
-  0% { opacity: 0; transform: scale(.12) rotate(-12deg); }
-  14% { opacity: 1; }
-  58% { opacity: .88; transform: scale(1) rotate(8deg); }
-  100% { opacity: 0; transform: scale(1.35) rotate(20deg); }
+.firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; pointer-events: none; }
+.paper-piece { position: absolute; top: 50%; left: 50%; display: block; width: 8px; height: 13px; border-radius: 2px; background: #ef476f; box-shadow: 0 1px 3px rgba(0,0,0,.12); transform: rotate(var(--paper-angle)) translateY(-10px) rotate(0deg) scale(.2); opacity: 0; animation: paper-burst 3.6s cubic-bezier(.16,.72,.32,1) infinite; animation-delay: calc(var(--burst-delay) + var(--piece-delay, 0s)); }
+.paper-piece:nth-child(4n + 2) { --piece-distance: 118px; --piece-delay: .08s; background: #ffd166; }
+.paper-piece:nth-child(4n + 3) { --piece-distance: 76px; --piece-delay: .16s; background: #06a77d; }
+.paper-piece:nth-child(4n) { --piece-distance: 104px; --piece-delay: .24s; background: #4378ff; }
+.paper-piece:nth-child(4n + 1) { --piece-distance: 88px; }
+.firework-one { top: 8%; left: 0; --burst-delay: 0s; }
+.firework-two { top: 16%; right: 0; --burst-delay: .6s; }
+.firework-three { top: 58%; left: 1%; --burst-delay: 1.2s; }
+.firework-four { top: 40%; left: 31%; --burst-delay: 1.8s; }
+.firework-five { top: 52%; right: 2%; --burst-delay: 2.4s; }
+.firework-six { bottom: 0; left: 38%; --burst-delay: 3s; }
+@keyframes paper-burst {
+  0% { opacity: 0; transform: rotate(var(--paper-angle)) translateY(-10px) rotate(0deg) scale(.2); }
+  12% { opacity: 1; }
+  62% { opacity: .95; transform: rotate(var(--paper-angle)) translateY(calc(var(--piece-distance, 96px) * -0.72)) rotate(140deg) scale(1); }
+  100% { opacity: 0; transform: rotate(var(--paper-angle)) translateY(calc(var(--piece-distance, 96px) * -1)) rotate(250deg) scale(.65); }
 }
-@media (prefers-reduced-motion: reduce) { .firework { animation: none; opacity: .72; transform: scale(.8); } }
+@media (prefers-reduced-motion: reduce) { .paper-piece { animation: none; opacity: .78; transform: rotate(var(--paper-angle)) translateY(-58px) rotate(35deg); } }
 .puzzle { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; max-width: 590px; margin: 0 auto; }
 .letter-tile { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; text-align: center; border: 1.5px solid #000; border-radius: 4px; background: transparent; cursor: pointer; transition: background .16s ease, color .16s ease, transform .16s ease; }
 .letter-tile:hover:not(:disabled) { transform: translateY(-2px); background: rgba(0,0,0,.08); }

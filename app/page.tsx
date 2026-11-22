@@ -208,7 +208,18 @@ export default function Page() {
           </form>
         </section>
       </section>
-      <footer className="app-footer">f Dầu f Mỡ ai nỡ f My Quốc Phong Long vô 1 nhóm 🤔<br />Ai? Là Ai?</footer>
+      <footer className="app-footer">
+        <div className="footer-marquee">
+          <div className="footer-marquee__track">
+            <span className="footer-marquee__group">
+              <span className="footer-marquee__copy">f Dầu f Mỡ ai lỡ f My Quốc Phong Long vô 1 nhóm 🤔<br />Ai? Nà Ai?</span>
+            </span>
+            <span className="footer-marquee__group" aria-hidden="true">
+              <span className="footer-marquee__copy">f Dầu f Mỡ ai lỡ f My Quốc Phong Long vô 1 nhóm 🤔<br />Ai? Nà Ai?</span>
+            </span>
+          </div>
+        </div>
+      </footer>
       <GameRulesDialog open={rulesDialogOpen} onOpenChange={setRulesDialogOpen} />
       <GameResultDialog
         open={resultDialogOpen}

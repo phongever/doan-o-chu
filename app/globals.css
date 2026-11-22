@@ -125,7 +125,19 @@ button { color: inherit; }
 .result-award-title { color: rgba(0,0,0,.7); font-size: 11px; font-weight: 700; }
 .result-dialog-close { min-height: 38px; align-self: flex-end; padding: 0 16px; border: 1px solid #000; border-radius: 3px; color: #fff; background: #000; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
 .app-footer { position: relative; z-index: 1; padding: 0 0 24px; text-align: center; font-size: 13px; color: #000; }
-@media (prefers-reduced-motion: reduce) { .result-dialog-backdrop, .result-dialog-popup { transition: none; } .flying-heart { animation: none; opacity: .6; } }
+.footer-marquee { overflow: hidden; }
+.footer-marquee__track { display: flex; width: max-content; animation: footer-marquee-scroll 22s linear infinite; }
+.footer-marquee__group { display: flex; flex: 0 0 auto; width: max-content; padding-right: 3rem; }
+.footer-marquee__copy { display: block; white-space: nowrap; line-height: 1.5; }
+@keyframes footer-marquee-scroll { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .result-dialog-backdrop, .result-dialog-popup { transition: none; }
+  .flying-heart { animation: none; opacity: .6; }
+  .footer-marquee__track { width: 100%; justify-content: center; animation: none; }
+  .footer-marquee__group { justify-content: center; width: 100%; padding-right: 0; }
+  .footer-marquee__group[aria-hidden="true"] { display: none; }
+  .footer-marquee__copy { white-space: normal; }
+}
 .empty-state { min-height: 58px; display: flex; align-items: center; gap: 10px; overflow: auto; color: rgba(0,0,0,.6); font-size: 12px; border-bottom: 1px solid rgba(0,0,0,.14); }
 .empty-dash { color: #000; font-size: 18px; }
 .add-player-form { display: flex; gap: 9px; margin-top: 14px; }

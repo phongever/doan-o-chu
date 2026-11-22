@@ -48,8 +48,8 @@ button { color: inherit; }
 .game-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 45px 0 36px; }
 .fireworks { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
 .firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; pointer-events: none; }
-.firework::before { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: #fff7b1; box-shadow: 0 0 12px 5px rgba(255, 212, 70, .8), 0 0 34px 12px rgba(255, 136, 43, .35); content: ""; opacity: 0; transform: translate(-50%, -50%) scale(.1); animation: new-year-flash 3.6s ease-out infinite; animation-delay: var(--burst-delay); }
-.firework-spark { position: absolute; top: 50%; left: 50%; display: block; width: 4px; height: clamp(22px, 3vw, 34px); border-radius: 999px; background: linear-gradient(to top, transparent 0%, var(--spark-color) 36%, var(--spark-color) 100%); box-shadow: 0 0 0 1px rgba(20, 20, 20, .4), 0 0 5px 1px var(--spark-color); opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scaleY(.15); transform-origin: center bottom; animation: new-year-burst 3.6s cubic-bezier(.16,.72,.32,1) infinite; animation-delay: calc(var(--burst-delay) + var(--spark-delay, 0s)); }
+.firework::before { position: absolute; top: 50%; left: 50%; width: 7px; height: 7px; border-radius: 0; background: #fff7b1; box-shadow: 0 0 0 3px #f4c20d, 0 0 0 7px #a65300; content: ""; opacity: 0; transform: translate(-50%, -50%) scale(.1); animation: new-year-flash 3.6s steps(5, end) infinite; animation-delay: var(--burst-delay); }
+.firework-spark { position: absolute; top: 50%; left: 50%; display: block; width: 6px; height: 6px; border-radius: 0; background: var(--spark-color); box-shadow: 0 0 0 1px #161616, -7px 7px 0 -1px var(--spark-color), 7px -7px 0 -1px var(--spark-color); opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scale(.25); transform-origin: center; animation: new-year-burst 3.6s steps(6, end) infinite; animation-delay: calc(var(--burst-delay) + var(--spark-delay, 0s)); }
 .firework-spark:nth-child(4n + 1) { --spark-color: #a65300; }
 .firework-spark:nth-child(4n + 2) { --spark-color: #ba1e36; --spark-delay: .07s; }
 .firework-spark:nth-child(4n + 3) { --spark-color: #006b5b; --spark-delay: .14s; }
@@ -61,10 +61,10 @@ button { color: inherit; }
 .firework-five { top: 52%; right: 2%; --burst-delay: 2.4s; }
 .firework-six { bottom: 0; left: 38%; --burst-delay: 3s; }
 @keyframes new-year-burst {
-  0% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scaleY(.12); }
+  0% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scale(.25); }
   10% { opacity: 1; }
-  58% { opacity: 1; transform: rotate(var(--spark-angle)) translateY(-68px) scaleY(1); }
-  100% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-98px) scaleY(.08); }
+  58% { opacity: 1; transform: rotate(var(--spark-angle)) translateY(-68px) scale(1); }
+  100% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-98px) scale(.25); }
 }
 @keyframes new-year-flash {
   0%, 9% { opacity: 0; transform: translate(-50%, -50%) scale(.1); }

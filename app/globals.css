@@ -48,24 +48,30 @@ button { color: inherit; }
 .game-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 45px 0 36px; }
 .fireworks { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
 .firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; pointer-events: none; }
-.paper-piece { position: absolute; top: 50%; left: 50%; display: block; width: 8px; height: 13px; border-radius: 2px; background: #ef476f; box-shadow: 0 1px 3px rgba(0,0,0,.12); transform: rotate(var(--paper-angle)) translateY(-10px) rotate(0deg) scale(.2); opacity: 0; animation: paper-burst 3.6s cubic-bezier(.16,.72,.32,1) infinite; animation-delay: calc(var(--burst-delay) + var(--piece-delay, 0s)); }
-.paper-piece:nth-child(4n + 2) { --piece-distance: 118px; --piece-delay: .08s; background: #ffd166; }
-.paper-piece:nth-child(4n + 3) { --piece-distance: 76px; --piece-delay: .16s; background: #06a77d; }
-.paper-piece:nth-child(4n) { --piece-distance: 104px; --piece-delay: .24s; background: #4378ff; }
-.paper-piece:nth-child(4n + 1) { --piece-distance: 88px; }
+.firework::before { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: #fff7b1; box-shadow: 0 0 12px 5px rgba(255, 212, 70, .8), 0 0 34px 12px rgba(255, 136, 43, .35); content: ""; opacity: 0; transform: translate(-50%, -50%) scale(.1); animation: new-year-flash 3.6s ease-out infinite; animation-delay: var(--burst-delay); }
+.firework-spark { position: absolute; top: 50%; left: 50%; display: block; width: 3px; height: clamp(22px, 3vw, 34px); border-radius: 999px; background: linear-gradient(to top, transparent, var(--spark-color) 55%, #fff 100%); box-shadow: 0 0 7px 1px color-mix(in srgb, var(--spark-color) 70%, transparent); opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scaleY(.15); transform-origin: center bottom; animation: new-year-burst 3.6s cubic-bezier(.16,.72,.32,1) infinite; animation-delay: calc(var(--burst-delay) + var(--spark-delay, 0s)); }
+.firework-spark:nth-child(4n + 1) { --spark-color: #ffbf47; }
+.firework-spark:nth-child(4n + 2) { --spark-color: #ff5b68; --spark-delay: .07s; }
+.firework-spark:nth-child(4n + 3) { --spark-color: #45d6ca; --spark-delay: .14s; }
+.firework-spark:nth-child(4n) { --spark-color: #9b82ff; --spark-delay: .21s; }
 .firework-one { top: 8%; left: 0; --burst-delay: 0s; }
 .firework-two { top: 16%; right: 0; --burst-delay: .6s; }
 .firework-three { top: 58%; left: 1%; --burst-delay: 1.2s; }
 .firework-four { top: 40%; left: 31%; --burst-delay: 1.8s; }
 .firework-five { top: 52%; right: 2%; --burst-delay: 2.4s; }
 .firework-six { bottom: 0; left: 38%; --burst-delay: 3s; }
-@keyframes paper-burst {
-  0% { opacity: 0; transform: rotate(var(--paper-angle)) translateY(-10px) rotate(0deg) scale(.2); }
-  12% { opacity: 1; }
-  62% { opacity: .95; transform: rotate(var(--paper-angle)) translateY(calc(var(--piece-distance, 96px) * -0.72)) rotate(140deg) scale(1); }
-  100% { opacity: 0; transform: rotate(var(--paper-angle)) translateY(calc(var(--piece-distance, 96px) * -1)) rotate(250deg) scale(.65); }
+@keyframes new-year-burst {
+  0% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scaleY(.12); }
+  10% { opacity: 1; }
+  58% { opacity: 1; transform: rotate(var(--spark-angle)) translateY(-68px) scaleY(1); }
+  100% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-98px) scaleY(.08); }
 }
-@media (prefers-reduced-motion: reduce) { .paper-piece { animation: none; opacity: .78; transform: rotate(var(--paper-angle)) translateY(-58px) rotate(35deg); } }
+@keyframes new-year-flash {
+  0%, 9% { opacity: 0; transform: translate(-50%, -50%) scale(.1); }
+  16% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  32%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(2.4); }
+}
+@media (prefers-reduced-motion: reduce) { .firework::before, .firework-spark { animation: none; opacity: .8; transform: rotate(var(--spark-angle)) translateY(-48px); } }
 .puzzle { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; max-width: 590px; margin: 0 auto; }
 .letter-tile { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; text-align: center; border: 1.5px solid #000; border-radius: 4px; background: transparent; cursor: pointer; transition: background .16s ease, color .16s ease, transform .16s ease; }
 .letter-tile:hover:not(:disabled) { transform: translateY(-2px); background: rgba(0,0,0,.08); }
@@ -125,16 +131,16 @@ button { color: inherit; }
 .result-award-title { color: rgba(0,0,0,.7); font-size: 11px; font-weight: 700; }
 .result-dialog-close { min-height: 38px; align-self: flex-end; padding: 0 16px; border: 1px solid #000; border-radius: 3px; color: #fff; background: #000; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
 .app-footer { position: relative; z-index: 1; padding: 0 0 24px; text-align: center; font-size: 13px; color: #000; }
-.footer-marquee { overflow: hidden; }
-.footer-marquee__track { display: flex; width: max-content; animation: footer-marquee-scroll 22s linear infinite; }
-.footer-marquee__group { display: flex; flex: 0 0 auto; width: max-content; padding-right: 3rem; }
+.footer-marquee { width: 100%; overflow: hidden; }
+.footer-marquee__track { display: flex; width: 200%; animation: footer-marquee-scroll 22s linear infinite; }
+.footer-marquee__group { display: flex; flex: 0 0 50%; width: 50%; justify-content: flex-end; }
 .footer-marquee__copy { display: block; white-space: nowrap; line-height: 1.5; }
 @keyframes footer-marquee-scroll { to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) {
   .result-dialog-backdrop, .result-dialog-popup { transition: none; }
   .flying-heart { animation: none; opacity: .6; }
   .footer-marquee__track { width: 100%; justify-content: center; animation: none; }
-  .footer-marquee__group { justify-content: center; width: 100%; padding-right: 0; }
+  .footer-marquee__group { flex-basis: 100%; justify-content: center; width: 100%; padding-right: 0; }
   .footer-marquee__group[aria-hidden="true"] { display: none; }
   .footer-marquee__copy { white-space: normal; }
 }

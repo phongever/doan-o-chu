@@ -49,11 +49,11 @@ button { color: inherit; }
 .fireworks { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
 .firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; pointer-events: none; }
 .firework::before { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: #fff7b1; box-shadow: 0 0 12px 5px rgba(255, 212, 70, .8), 0 0 34px 12px rgba(255, 136, 43, .35); content: ""; opacity: 0; transform: translate(-50%, -50%) scale(.1); animation: new-year-flash 3.6s ease-out infinite; animation-delay: var(--burst-delay); }
-.firework-spark { position: absolute; top: 50%; left: 50%; display: block; width: 3px; height: clamp(22px, 3vw, 34px); border-radius: 999px; background: linear-gradient(to top, transparent, var(--spark-color) 55%, #fff 100%); box-shadow: 0 0 7px 1px color-mix(in srgb, var(--spark-color) 70%, transparent); opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scaleY(.15); transform-origin: center bottom; animation: new-year-burst 3.6s cubic-bezier(.16,.72,.32,1) infinite; animation-delay: calc(var(--burst-delay) + var(--spark-delay, 0s)); }
-.firework-spark:nth-child(4n + 1) { --spark-color: #ffbf47; }
-.firework-spark:nth-child(4n + 2) { --spark-color: #ff5b68; --spark-delay: .07s; }
-.firework-spark:nth-child(4n + 3) { --spark-color: #45d6ca; --spark-delay: .14s; }
-.firework-spark:nth-child(4n) { --spark-color: #9b82ff; --spark-delay: .21s; }
+.firework-spark { position: absolute; top: 50%; left: 50%; display: block; width: 4px; height: clamp(22px, 3vw, 34px); border-radius: 999px; background: linear-gradient(to top, transparent 0%, var(--spark-color) 36%, var(--spark-color) 100%); box-shadow: 0 0 0 1px rgba(20, 20, 20, .4), 0 0 5px 1px var(--spark-color); opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scaleY(.15); transform-origin: center bottom; animation: new-year-burst 3.6s cubic-bezier(.16,.72,.32,1) infinite; animation-delay: calc(var(--burst-delay) + var(--spark-delay, 0s)); }
+.firework-spark:nth-child(4n + 1) { --spark-color: #a65300; }
+.firework-spark:nth-child(4n + 2) { --spark-color: #ba1e36; --spark-delay: .07s; }
+.firework-spark:nth-child(4n + 3) { --spark-color: #006b5b; --spark-delay: .14s; }
+.firework-spark:nth-child(4n) { --spark-color: #56328c; --spark-delay: .21s; }
 .firework-one { top: 8%; left: 0; --burst-delay: 0s; }
 .firework-two { top: 16%; right: 0; --burst-delay: .6s; }
 .firework-three { top: 58%; left: 1%; --burst-delay: 1.2s; }

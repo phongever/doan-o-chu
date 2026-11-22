@@ -136,7 +136,7 @@ export default function Page() {
 
   return (
     <main className="game-shell">
-      {winnerId !== null && <div className="fireworks" aria-hidden="true">{['firework-one', 'firework-two', 'firework-three', 'firework-four', 'firework-five', 'firework-six'].map((burst) => <span className={`firework ${burst}`} key={burst}>{Array.from({ length: 16 }, (_, index) => <i className="paper-piece" key={index} style={{ '--paper-angle': `${index * 22.5}deg` } as React.CSSProperties} />)}</span>)}</div>}
+      {winnerId !== null && <div className="fireworks" aria-hidden="true">{['firework-one', 'firework-two', 'firework-three', 'firework-four', 'firework-five', 'firework-six'].map((burst) => <span className={`firework ${burst}`} key={burst}>{Array.from({ length: 24 }, (_, index) => <i className="firework-spark" key={index} style={{ '--spark-angle': `${index * 15}deg` } as React.CSSProperties} />)}</span>)}</div>}
       <header className="topbar">
         <div className="topbar-actions">
           <button className="undo-button" type="button" onClick={undo} disabled={!history.length} aria-label="Hoàn tác thao tác gần nhất"><RotateCcw size={16} /> <span>Hoàn tác</span></button>
@@ -211,12 +211,7 @@ export default function Page() {
       <footer className="app-footer">
         <div className="footer-marquee">
           <div className="footer-marquee__track">
-            <span className="footer-marquee__group">
-              <span className="footer-marquee__copy">f Dầu f Mỡ ai lỡ f My Quốc Phong Long vô 1 nhóm 🤔<br />Ai? Nà Ai?</span>
-            </span>
-            <span className="footer-marquee__group" aria-hidden="true">
-              <span className="footer-marquee__copy">f Dầu f Mỡ ai lỡ f My Quốc Phong Long vô 1 nhóm 🤔<br />Ai? Nà Ai?</span>
-            </span>
+            <span className="footer-marquee__copy">f Dầu f Mỡ ai lỡ f My Quốc Phong Long vô 1 nhóm 🤔<br />Ai? Nà Ai?</span>
           </div>
         </div>
       </footer>

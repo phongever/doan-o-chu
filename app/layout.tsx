@@ -9,18 +9,18 @@ const robotoSerif = Roboto_Serif({
 })
 
 export const metadata: Metadata = {
-  title: 'Trò chơi đoán chữ',
+  title: 'Chơi đoán ô chữ',
   description: 'Đoán trúng có quà',
   openGraph: {
-    title: 'Trò chơi đoán chữ',
+    title: 'Chơi đoán ô chữ',
     description: 'Đoán trúng có quà',
     type: 'website',
     locale: 'vi_VN',
     images: [{
-      url: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Culinary-okqptcDIMlKRma2ASYrg5J6IlVytpO.png',
+      url: '/og-image.png',
       width: 1920,
       height: 1080,
-      alt: 'Chiếc nón lên đỉnh Olympia — trò chơi đoán chữ',
+      alt: 'Hộp quà đỏ và vàng trên nền kem',
     }],
   },
   generator: 'v0.app',

@@ -48,23 +48,19 @@ button { color: inherit; }
 .game-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 45px 0 36px; }
 .fireworks { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
 .firework { position: absolute; width: clamp(150px, 20vw, 220px); aspect-ratio: 1; pointer-events: none; }
-.firework::before { position: absolute; top: 50%; left: 50%; width: 7px; height: 7px; border-radius: 0; background: #fff7b1; box-shadow: 0 0 0 3px #f4c20d, 0 0 0 7px #a65300; content: ""; opacity: 0; transform: translate(-50%, -50%) scale(.1); animation: new-year-flash 3.6s steps(5, end) infinite; animation-delay: var(--burst-delay); }
-.firework-spark { position: absolute; top: 50%; left: 50%; display: block; width: 6px; height: 6px; border-radius: 0; background: var(--spark-color); box-shadow: 0 0 0 1px #161616, -7px 7px 0 -1px var(--spark-color), 7px -7px 0 -1px var(--spark-color); opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scale(.25); transform-origin: center; animation: new-year-burst 3.6s steps(6, end) infinite; animation-delay: calc(var(--burst-delay) + var(--spark-delay, 0s)); }
-.firework-spark:nth-child(4n + 1) { --spark-color: #a65300; }
-.firework-spark:nth-child(4n + 2) { --spark-color: #ba1e36; --spark-delay: .07s; }
-.firework-spark:nth-child(4n + 3) { --spark-color: #006b5b; --spark-delay: .14s; }
-.firework-spark:nth-child(4n) { --spark-color: #56328c; --spark-delay: .21s; }
-.firework-one { top: 8%; left: 0; --burst-delay: 0s; }
-.firework-two { top: 16%; right: 0; --burst-delay: .6s; }
-.firework-three { top: 58%; left: 1%; --burst-delay: 1.2s; }
-.firework-four { top: 40%; left: 31%; --burst-delay: 1.8s; }
-.firework-five { top: 52%; right: 2%; --burst-delay: 2.4s; }
-.firework-six { bottom: 0; left: 38%; --burst-delay: 3s; }
+.firework::before { position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; border-radius: 50%; background: var(--burst-color); box-shadow: 0 0 8px 3px color-mix(in srgb, var(--burst-color) 70%, transparent), 0 0 22px 6px color-mix(in srgb, var(--burst-color) 48%, transparent); content: ""; opacity: 0; transform: translate(-50%, -50%) scale(.1); animation: new-year-flash 3.6s ease-out infinite; animation-delay: var(--burst-delay); }
+.firework-spark { position: absolute; top: 50%; left: 50%; display: block; width: 3px; height: clamp(22px, 3vw, 34px); border-radius: 999px; background: linear-gradient(to top, transparent, var(--burst-color) 48%, var(--burst-color) 100%); box-shadow: 0 0 5px 1px color-mix(in srgb, var(--burst-color) 55%, transparent); opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scaleY(.15); transform-origin: center bottom; animation: new-year-burst 3.6s cubic-bezier(.16,.72,.32,1) infinite; animation-delay: var(--burst-delay); }
+.firework-one { top: 8%; left: 0; --burst-delay: 0s; --burst-color: #b51f2e; }
+.firework-two { top: 16%; right: 0; --burst-delay: .6s; --burst-color: #a45f00; }
+.firework-three { top: 58%; left: 1%; --burst-delay: 1.2s; --burst-color: #b51f2e; }
+.firework-four { top: 40%; left: 31%; --burst-delay: 1.8s; --burst-color: #a45f00; }
+.firework-five { top: 52%; right: 2%; --burst-delay: 2.4s; --burst-color: #b51f2e; }
+.firework-six { bottom: 0; left: 38%; --burst-delay: 3s; --burst-color: #a45f00; }
 @keyframes new-year-burst {
-  0% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scale(.25); }
+  0% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-8px) scaleY(.15); }
   10% { opacity: 1; }
-  58% { opacity: 1; transform: rotate(var(--spark-angle)) translateY(-68px) scale(1); }
-  100% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-98px) scale(.25); }
+  58% { opacity: 1; transform: rotate(var(--spark-angle)) translateY(-68px) scaleY(1); }
+  100% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(-98px) scaleY(.08); }
 }
 @keyframes new-year-flash {
   0%, 9% { opacity: 0; transform: translate(-50%, -50%) scale(.1); }

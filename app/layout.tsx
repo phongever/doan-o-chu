@@ -20,7 +20,7 @@ export const metadata: Metadata = {
       url: '/og-image.png',
       width: 1920,
       height: 1080,
-      alt: 'Hộp quà đỏ và vàng trên nền kem',
+      alt: 'Hộp quà đỏ vàng bên chữ BỰ trên nền kem',
     }],
   },
   generator: 'v0.app',

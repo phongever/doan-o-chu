@@ -1,15 +1,26 @@
 'use client'
 
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { BookOpenText, Plus, RotateCcw, Square } from 'lucide-react'
+import { AchievementToast, type AchievementNotice } from '@/components/achievement-toast'
 import { GameResultDialog } from '@/components/game-result-dialog'
 import { GameRulesDialog } from '@/components/game-rules-dialog'
 
-type Player = { id: number; name: string; score: number; disabled: boolean }
+type Player = { id: number; name: string; score: number; disabled: boolean; letterOpens: number; currentStreak: number }
 type GameState = { revealed: boolean[]; players: Player[]; selectedPlayerId: number | null; winnerId: number | null; answerRevealed: boolean }
 
 const defaultLetters = ['M', 'Ơ', 'Đ', 'Â', 'Y', 'M', 'A', 'H', 'U', 'P']
 const defaultSolution = ['M', 'Ỡ', 'Đ', 'Ấ', 'Y', 'M', 'À', 'H', 'Ú', 'P']
+
+function getStreakTitle(count: number) {
+  if (count === 1) return 'Mở'
+  if (count === 2) return 'Double kill'
+  if (count === 3) return 'Triple kill'
+  if (count === 4) return 'Quadra kill'
+  if (count === 5) return 'Penta kill'
+  return 'Mega kill'
+}
+
 export default function Page() {
   const letters = defaultLetters
   const solution = defaultSolution
@@ -22,6 +33,8 @@ export default function Page() {
   const [rulesDialogOpen, setRulesDialogOpen] = useState(false)
   const [name, setName] = useState('')
   const [history, setHistory] = useState<GameState[]>([])
+  const [achievementNotice, setAchievementNotice] = useState<AchievementNotice | null>(null)
+  const notificationId = useRef(0)
   const playerRows = useRef(new Map<number, HTMLLIElement>())
   const previousPositions = useRef(new Map<number, number>())
   const orderedPlayers = useMemo(() => [...players].sort((a, b) => Number(a.disabled) - Number(b.disabled) || b.score - a.score || a.id - b.id), [players])
@@ -44,6 +57,12 @@ export default function Page() {
     previousPositions.current = nextPositions
   }, [orderedPlayers])
 
+  useEffect(() => {
+    if (!achievementNotice) return
+    const timeoutId = window.setTimeout(() => setAchievementNotice(null), 2800)
+    return () => window.clearTimeout(timeoutId)
+  }, [achievementNotice])
+
   function record(next: GameState) {
     setHistory((previous) => [...previous, {
       revealed: [...revealed],
@@ -63,10 +82,10 @@ export default function Page() {
     event.preventDefault()
     const cleanName = name.trim()
     if (!cleanName || answerRevealed) return
-    const newPlayer = { id: Date.now(), name: cleanName, score: 0, disabled: false }
+    const newPlayer = { id: Date.now(), name: cleanName, score: 0, disabled: false, letterOpens: 0, currentStreak: 0 }
     record({
       revealed,
-      players: [...players, newPlayer],
+      players: [...players.map((player) => ({ ...player, currentStreak: 0 })), newPlayer],
       selectedPlayerId: newPlayer.id,
       winnerId,
       answerRevealed,
@@ -76,7 +95,11 @@ export default function Page() {
 
   function selectPlayer(id: number) {
     if (winnerId !== null || answerRevealed) return
-    record({ revealed, players, selectedPlayerId: id, winnerId, answerRevealed })
+    const nextPlayers = id === selectedPlayerId
+      ? players
+      : players.map((player) => player.currentStreak === 0 ? player : { ...player, currentStreak: 0 })
+    if (id !== selectedPlayerId) setAchievementNotice(null)
+    record({ revealed, players: nextPlayers, selectedPlayerId: id, winnerId, answerRevealed })
   }
 
   function stopPlayer(id: number) {
@@ -88,6 +111,39 @@ export default function Page() {
       selectedPlayerId: selectedPlayerId === id ? null : selectedPlayerId,
       winnerId,
       answerRevealed,
+    })
+  }
+
+  function openLetterBox(letterIndex: number) {
+    const activePlayer = players.find((player) => player.id === selectedPlayerId && !player.disabled)
+    if (revealed[letterIndex] || !activePlayer || winnerId !== null) return
+
+    const nextRevealed = [...revealed]
+    nextRevealed[letterIndex] = true
+    const nextStreak = activePlayer.currentStreak + 1
+    const streakTitle = getStreakTitle(nextStreak)
+    const isFirstOpen = activePlayer.letterOpens === 0
+    const isLastLetter = nextRevealed.every(Boolean)
+    const detail = isFirstOpen && isLastLetter
+      ? `Chiến công đầu · ${streakTitle}`
+      : isFirstOpen || isLastLetter ? streakTitle : null
+
+    record({
+      revealed: nextRevealed,
+      players: players.map((player) => player.id === activePlayer.id
+        ? { ...player, score: player.score + 1, letterOpens: player.letterOpens + 1, currentStreak: nextStreak }
+        : player),
+      selectedPlayerId,
+      winnerId,
+      answerRevealed,
+    })
+
+    setAchievementNotice({
+      id: ++notificationId.current,
+      title: isLastLetter ? 'Quét sạch' : isFirstOpen ? 'Chiến công đầu' : streakTitle,
+      detail,
+      playerName: activePlayer.name,
+      letter: letters[letterIndex],
     })
   }
 
@@ -115,6 +171,7 @@ export default function Page() {
     setWinnerId(previous.winnerId)
     setAnswerRevealed(previous.answerRevealed)
     setResultDialogOpen(false)
+    setAchievementNotice(null)
     setHistory((items) => items.slice(0, -1))
   }
 
@@ -125,6 +182,7 @@ export default function Page() {
     setWinnerId(null)
     setAnswerRevealed(false)
     setResultDialogOpen(false)
+    setAchievementNotice(null)
     setName('')
     setHistory([])
   }
@@ -153,19 +211,7 @@ export default function Page() {
                 className={`letter-tile${revealed[letterIndex] ? ' is-revealed' : ''}${answerRevealed ? ' answer-reveal' : ''}`}
                 key={letterIndex}
                 type="button"
-                onClick={() => {
-                  const activePlayer = players.find((player) => player.id === selectedPlayerId && !player.disabled)
-                  if (revealed[letterIndex] || !activePlayer || winnerId !== null) return
-                  const nextRevealed = [...revealed]
-                  nextRevealed[letterIndex] = true
-                  record({
-                    revealed: nextRevealed,
-                    players: players.map((player) => player.id === activePlayer.id ? { ...player, score: player.score + 1 } : player),
-                    selectedPlayerId,
-                    winnerId,
-                    answerRevealed,
-                  })
-                }}
+                onClick={() => openLetterBox(letterIndex)}
                 disabled={!selectedPlayerId || winnerId !== null || revealed[letterIndex]}
                 aria-label={revealed[letterIndex] ? `Chữ cái ${displayedLetter}` : !selectedPlayerId ? 'Chọn người chơi để mở chữ cái' : `Mở chữ cái thứ ${letterIndex + 1}`}
                 aria-pressed={revealed[letterIndex]}
@@ -194,7 +240,7 @@ export default function Page() {
                     <span className="player-name">{player.name}</span>
                     {selectedPlayerId === player.id && winnerId === null ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
                   </button>
-                  <span className="player-score">{player.score}<small> ĐIỂM</small></span>
+                  <span className="player-score">{player.score}<small> ĐIỂM</small><span className="player-open-count">{player.letterOpens} ô mở</span></span>
                   {!player.disabled && !answerRevealed && <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} aria-label={`Tạm dừng ${player.name}`} title="Tạm dừng người chơi"><Square size={15} fill="currentColor" /></button>}
                 </li>
               ))}
@@ -215,6 +261,7 @@ export default function Page() {
           </div>
         </div>
       </footer>
+      {achievementNotice && <AchievementToast key={achievementNotice.id} notice={achievementNotice} />}
       <GameRulesDialog open={rulesDialogOpen} onOpenChange={setRulesDialogOpen} />
       <GameResultDialog
         open={resultDialogOpen}

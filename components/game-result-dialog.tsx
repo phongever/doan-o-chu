@@ -1,7 +1,7 @@
 'use client'
 
 import { Dialog } from '@base-ui/react/dialog'
-import { Crown, Gift, Trophy } from 'lucide-react'
+import { Crown, Trophy } from 'lucide-react'
 import { useRef, useState } from 'react'
 
 type GameResultDialogProps = {
@@ -45,21 +45,19 @@ export function GameResultDialog({
                 )) : <strong className="result-award-name">—</strong>}
               </span>
             </span>
-            <span className="result-award-card">
+            <button
+              className="result-award-card result-award-card--interactive"
+              type="button"
+              aria-haspopup="dialog"
+              aria-label={`Mở quà đặc biệt cho ${answeringPlayerName}`}
+              onMouseEnter={preloadGiftPhoto}
+              onFocus={preloadGiftPhoto}
+              onClick={() => setGiftPhotoOpen(true)}
+            >
               <Trophy className="result-award-icon" size={32} strokeWidth={2.25} aria-hidden="true" />
               <span className="result-award-title">Giải đặc biệt</span>
               <strong className="result-award-name">{answeringPlayerName}</strong>
-              <button
-                className="result-open-gift"
-                type="button"
-                onMouseEnter={preloadGiftPhoto}
-                onFocus={preloadGiftPhoto}
-                onClick={() => setGiftPhotoOpen(true)}
-              >
-                <Gift size={15} aria-hidden="true" />
-                <span>Mở quà</span>
-              </button>
-            </span>
+            </button>
           </Dialog.Description>
           <Dialog.Close className="result-dialog-close">Đóng</Dialog.Close>
         </Dialog.Popup>

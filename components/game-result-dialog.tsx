@@ -62,28 +62,30 @@ export function GameResultDialog({
             </span>
           </Dialog.Description>
           <Dialog.Close className="result-dialog-close">Đóng</Dialog.Close>
+        </Dialog.Popup>
+      </Dialog.Portal>
+
+      <Dialog.Root open={giftPhotoOpen} onOpenChange={setGiftPhotoOpen}>
+        <Dialog.Portal>
+          <Dialog.Backdrop className="gift-reveal-backdrop" />
+          <Dialog.Popup className="gift-reveal-popup">
+            <Dialog.Title className="sr-only">Món quà đặc biệt</Dialog.Title>
+            <Dialog.Description className="sr-only">
+              Ảnh món quà dành cho người đoán đúng đáp án.
+            </Dialog.Description>
+            <img
+              className="gift-reveal-image"
+              src={giftPhotoSrc}
+              alt="Người đàn ông dang tay trên nền hồng với những trái tim"
+            />
+            <span className="gift-reveal-ripple gift-reveal-ripple--first" aria-hidden="true" />
+            <span className="gift-reveal-ripple gift-reveal-ripple--second" aria-hidden="true" />
+            <Dialog.Close className="gift-reveal-close" type="button">
+              Đóng ảnh
+            </Dialog.Close>
           </Dialog.Popup>
         </Dialog.Portal>
-
-        <Dialog.Root open={giftPhotoOpen} onOpenChange={setGiftPhotoOpen}>
-          <Dialog.Portal>
-            <Dialog.Backdrop className="gift-reveal-backdrop" />
-            <Dialog.Popup className="gift-reveal-popup">
-              <Dialog.Title className="sr-only">Món quà đặc biệt</Dialog.Title>
-              <Dialog.Description className="sr-only">
-                Ảnh món quà dành cho người đoán đúng đáp án.
-              </Dialog.Description>
-              <img
-                className="gift-reveal-image"
-                src={giftPhotoSrc}
-                alt="Người đàn ông dang tay trên nền hồng với những trái tim"
-              />
-              <Dialog.Close className="gift-reveal-close" type="button">
-                Đóng ảnh
-              </Dialog.Close>
-            </Dialog.Popup>
-          </Dialog.Portal>
-        </Dialog.Root>
       </Dialog.Root>
+    </Dialog.Root>
     )
   }

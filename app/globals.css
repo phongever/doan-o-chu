@@ -95,6 +95,19 @@ button { color: inherit; }
 .player-status { color: rgba(0,0,0,.55); font-size: 8px; font-weight: 800; letter-spacing: .12em; }
 .player-score { min-width: 54px; text-align: right; font-size: 22px; font-variant-numeric: tabular-nums; }
 .player-score small { font-size: 8px; font-weight: 700; letter-spacing: .08em; }
+.player-open-count { display: block; color: rgba(0,0,0,.5); font-size: 8px; font-weight: 600; line-height: 1.2; white-space: nowrap; }
+.achievement-toast { position: fixed; z-index: 20; pointer-events: none; top: max(18px, env(safe-area-inset-top)); left: 50%; width: min(520px, calc(100vw - 24px)); padding: 10px 14px; overflow: hidden; border: 3px solid #2d0309; border-radius: 14px; color: #fff4ef; background: radial-gradient(circle at 9% 22%, rgba(255,239,225,.2) 0 1.5px, transparent 2.5px), radial-gradient(circle at 83% 68%, rgba(34,0,5,.42) 0 2px, transparent 3px), linear-gradient(115deg, #47060f, #b7192b 52%, #650811); box-shadow: 5px 6px 0 #2d0309, 0 15px 32px rgba(35,0,8,.42); text-align: center; transform: translateX(-50%); animation: achievement-toast-enter 580ms cubic-bezier(.18,.9,.25,1.2) both; }
+.achievement-toast::before { position: absolute; top: -28px; right: -18px; width: 82px; aspect-ratio: 1; border: 5px solid rgba(255,231,220,.32); border-radius: 50%; content: ''; pointer-events: none; }
+.achievement-toast-line { position: relative; z-index: 1; display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 10px; }
+.achievement-toast-title { min-width: 0; flex: 1 1 auto; overflow: hidden; color: #fff4ef; font-size: clamp(16px, 4vw, 22px); font-weight: 900; letter-spacing: -.035em; text-overflow: ellipsis; white-space: nowrap; text-shadow: 1px 1px 0 rgba(45,3,9,.7); }
+.achievement-toast-player { min-width: 0; max-width: 36%; flex: 0 1 auto; overflow: hidden; color: #fff4ef; font-size: clamp(12px, 3vw, 16px); font-weight: 900; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.achievement-toast-letter { flex: 0 0 38px; width: 38px; height: 38px; display: grid; place-items: center; border: 2px solid #2d0309; border-radius: 10px; color: #2d0309; background: #fff0e7; box-shadow: 3px 3px 0 #2d0309; font-size: 21px; font-weight: 900; transform: rotate(4deg); }
+@keyframes achievement-toast-enter {
+  0% { opacity: 0; transform: translate(-50%, -36px) scale(.55) rotate(-7deg); }
+  55% { opacity: 1; transform: translate(-50%, 7px) scale(1.08) rotate(2deg); }
+  78% { transform: translate(-50%, -2px) scale(.98) rotate(-.5deg); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1) rotate(0); }
+}
 .is-selected .player-select { background: rgba(0,0,0,.08); }
 .stop-button { width: 30px; height: 30px; display: grid; place-items: center; border: 0; background: transparent; cursor: pointer; }
 .stop-button svg { width: 13px; height: 13px; }
@@ -120,9 +133,9 @@ button { color: inherit; }
 .result-award-icon { flex: 0 0 auto; color: #000; }
 .result-award-title { color: rgba(0,0,0,.7); font-size: 11px; font-weight: 700; }
 .result-dialog-close { min-height: 38px; align-self: flex-end; padding: 0 16px; border: 1px solid #000; border-radius: 3px; color: #fff; background: #000; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
-.result-open-gift { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 12px; border: 1px solid #000; border-radius: 3px; color: #fff; background: #000; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; transition: color 140ms ease, background 140ms ease; }
-.result-open-gift:hover { color: #000; background: transparent; }
-.result-open-gift:focus-visible, .gift-reveal-close:focus-visible { outline: 3px solid #b42318; outline-offset: 3px; }
+.result-award-card--interactive { width: 100%; color: inherit; cursor: pointer; font: inherit; transition: box-shadow 160ms ease, transform 160ms ease; }
+.result-award-card--interactive:hover { box-shadow: 0 8px 22px rgba(0,0,0,.16); transform: translateY(-2px); }
+.result-award-card--interactive:focus-visible, .gift-reveal-close:focus-visible { outline: 3px solid #b42318; outline-offset: 3px; }
 .gift-reveal-backdrop { position: fixed; inset: 0; background: #ef86a5; }
 .gift-reveal-popup { position: fixed; inset: 0; width: 100vw; height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 0; overflow: hidden; background: #ef86a5; outline: none; }
 .gift-reveal-image { display: block; width: 100%; height: 100%; object-fit: contain; transform-origin: center; animation: gift-shake-zoom 920ms cubic-bezier(.2,.7,.2,1) both; }
@@ -150,6 +163,7 @@ button { color: inherit; }
   .result-dialog-backdrop, .result-dialog-popup { transition: none; }
   .gift-reveal-image { animation: none; }
   .gift-reveal-ripple { display: none; }
+  .achievement-toast { animation: none; }
   .flying-heart { animation: none; opacity: .6; }
   .footer-marquee__track { left: 0; width: 100%; animation: none; }
   .footer-marquee__copy { white-space: normal; }

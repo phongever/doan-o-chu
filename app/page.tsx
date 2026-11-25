@@ -6,7 +6,7 @@ import { AchievementToast, type AchievementNotice } from '@/components/achieveme
 import { GameResultDialog } from '@/components/game-result-dialog'
 import { GameRulesDialog } from '@/components/game-rules-dialog'
 
-type Player = { id: number; name: string; score: number; disabled: boolean; letterOpens: number; currentStreak: number }
+type Player = { id: number; name: string; score: number; disabled: boolean; currentStreak: number }
 type GameState = { revealed: boolean[]; players: Player[]; selectedPlayerId: number | null; winnerId: number | null; answerRevealed: boolean }
 
 const defaultLetters = ['M', 'Ơ', 'Đ', 'Â', 'Y', 'M', 'A', 'H', 'U', 'P']
@@ -82,7 +82,7 @@ export default function Page() {
     event.preventDefault()
     const cleanName = name.trim()
     if (!cleanName || answerRevealed) return
-    const newPlayer = { id: Date.now(), name: cleanName, score: 0, disabled: false, letterOpens: 0, currentStreak: 0 }
+    const newPlayer = { id: Date.now(), name: cleanName, score: 0, disabled: false, currentStreak: 0 }
     record({
       revealed,
       players: [...players.map((player) => ({ ...player, currentStreak: 0 })), newPlayer],
@@ -135,7 +135,7 @@ export default function Page() {
     record({
       revealed: nextRevealed,
       players: players.map((player) => player.id === activePlayer.id
-        ? { ...player, score: player.score + 1, letterOpens: player.letterOpens + 1, currentStreak: nextStreak }
+        ? { ...player, score: player.score + 1, currentStreak: nextStreak }
         : player),
       selectedPlayerId,
       winnerId,
@@ -243,7 +243,7 @@ export default function Page() {
                     <span className="player-name">{player.name}</span>
                     {selectedPlayerId === player.id && winnerId === null ? <span className="player-status">ĐANG CHƠI</span> : player.disabled ? <span className="player-status">ĐÃ TẠM DỪNG</span> : null}
                   </button>
-                  <span className="player-score">{player.score}<small> ĐIỂM</small><span className="player-open-count">{player.letterOpens} ô mở</span></span>
+                  <span className="player-score">{player.score}<small> ĐIỂM</small></span>
                   {!player.disabled && !answerRevealed && <button className="stop-button" type="button" onClick={() => stopPlayer(player.id)} aria-label={`Tạm dừng ${player.name}`} title="Tạm dừng người chơi"><Square size={15} fill="currentColor" /></button>}
                 </li>
               ))}

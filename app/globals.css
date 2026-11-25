@@ -70,13 +70,23 @@ button { color: inherit; }
 .letter-tile:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid rgba(0,0,0,.45); outline-offset: 3px; }
 .letter-tile span { font-size: clamp(28px, 5vw, 42px); font-weight: 700; line-height: 1; }
 .letter-tile.is-revealed { color: #fff; background: #000; }
+.letter-tile.answer-reveal { animation: answer-box-shake 680ms ease-in-out both; animation-delay: calc(var(--letter-index) * 38ms); }
 .letter-tile.answer-reveal span { display: inline-block; animation: answer-letter-reveal 520ms cubic-bezier(.2,.75,.25,1) both; animation-delay: calc(var(--letter-index) * 38ms); }
+@keyframes answer-box-shake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  15% { transform: translateX(-7px) rotate(-1deg); }
+  30% { transform: translateX(7px) rotate(1deg); }
+  45% { transform: translateX(-6px) rotate(-.8deg); }
+  60% { transform: translateX(6px) rotate(.8deg); }
+  75% { transform: translateX(-3px) rotate(-.4deg); }
+  90% { transform: translateX(3px) rotate(.4deg); }
+}
 @keyframes answer-letter-reveal {
   0% { opacity: 0; transform: rotateX(-75deg) translateY(8px) scale(.8); }
   70% { opacity: 1; transform: rotateX(8deg) translateY(0) scale(1.06); }
   100% { opacity: 1; transform: rotateX(0) scale(1); }
 }
-@media (prefers-reduced-motion: reduce) { .letter-tile.answer-reveal span { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .letter-tile.answer-reveal, .letter-tile.answer-reveal span { animation: none; } }
 .players-panel { max-width: 590px; margin: 46px auto 0; }
 .players-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 13px; border-bottom: 1px solid rgba(0,0,0,.55); }
 .players-header h2 { margin: 0; font-size: 25px; font-weight: 400; letter-spacing: -.035em; }
@@ -95,7 +105,6 @@ button { color: inherit; }
 .player-status { color: rgba(0,0,0,.55); font-size: 8px; font-weight: 800; letter-spacing: .12em; }
 .player-score { min-width: 54px; text-align: right; font-size: 22px; font-variant-numeric: tabular-nums; }
 .player-score small { font-size: 8px; font-weight: 700; letter-spacing: .08em; }
-.player-open-count { display: block; color: rgba(0,0,0,.5); font-size: 8px; font-weight: 600; line-height: 1.2; white-space: nowrap; }
 .achievement-toast { position: fixed; z-index: 20; pointer-events: none; top: max(18px, env(safe-area-inset-top)); left: 50%; width: min(520px, calc(100vw - 24px)); padding: 10px 14px; overflow: hidden; border: 3px solid #2d0309; border-radius: 14px; color: #fff4ef; background: radial-gradient(circle at 9% 22%, rgba(255,239,225,.2) 0 1.5px, transparent 2.5px), radial-gradient(circle at 83% 68%, rgba(34,0,5,.42) 0 2px, transparent 3px), linear-gradient(115deg, #47060f, #b7192b 52%, #650811); box-shadow: 5px 6px 0 #2d0309, 0 15px 32px rgba(35,0,8,.42); text-align: center; transform: translateX(-50%); animation: achievement-toast-enter 580ms cubic-bezier(.18,.9,.25,1.2) both; }
 .achievement-toast::before { position: absolute; top: -28px; right: -18px; width: 82px; aspect-ratio: 1; border: 5px solid rgba(255,231,220,.32); border-radius: 50%; content: ''; pointer-events: none; }
 .achievement-toast-line { position: relative; z-index: 1; display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 10px; }

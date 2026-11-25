@@ -122,11 +122,15 @@ export default function Page() {
     nextRevealed[letterIndex] = true
     const nextStreak = activePlayer.currentStreak + 1
     const streakTitle = getStreakTitle(nextStreak)
-    const isFirstOpen = activePlayer.letterOpens === 0
+    const isFirstBoardOpen = revealed.every((isRevealed) => !isRevealed)
     const isLastLetter = nextRevealed.every(Boolean)
-    const detail = isFirstOpen && isLastLetter
-      ? `Chiến công đầu · ${streakTitle}`
-      : isFirstOpen || isLastLetter ? streakTitle : null
+    const notificationTitle = isFirstBoardOpen
+      ? 'Chiến công đầu'
+      : isLastLetter
+        ? 'Quét sạch'
+        : activePlayer.currentStreak === 0
+          ? 'Mở'
+          : streakTitle
 
     record({
       revealed: nextRevealed,
@@ -140,8 +144,7 @@ export default function Page() {
 
     setAchievementNotice({
       id: ++notificationId.current,
-      title: isLastLetter ? 'Quét sạch' : isFirstOpen ? 'Chiến công đầu' : streakTitle,
-      detail,
+      title: notificationTitle,
       playerName: activePlayer.name,
       letter: letters[letterIndex],
     })
